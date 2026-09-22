@@ -8,7 +8,7 @@ let session=null,match=null,online=true,busy=false,tab='overview',scope='world',
 let launch=new URL(location.href).searchParams.get('launch');
 if(launch||new URL(location.href).searchParams.has('auth'))history.replaceState(null,'',location.pathname);
 let preferences={};try{preferences=JSON.parse(localStorage.getItem('dots-preferences')??'{}');}catch{}
-$('difficulty').value=['easy','normal','hard','jev'].includes(preferences.difficulty)?preferences.difficulty:'normal';
+$('difficulty').value=['easy','normal','hard','jev'].includes(preferences.difficulty)?preferences.difficulty:'jev';
 $('telemetry-consent').checked=preferences.telemetry===true;
 function savePreferences(){try{localStorage.setItem('dots-preferences',JSON.stringify({difficulty:$('difficulty').value,telemetry:$('telemetry-consent').checked}));}catch{}}
 function toast(message){$('toast').textContent=message;$('toast').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>{$('toast').hidden=true;},6000);}
