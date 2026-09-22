@@ -1,0 +1,58 @@
+{
+  "package": "jev-dots-and-boxes",
+  "version": "1.0.0",
+  "builtAt": "2026-09-22T05:22:54.620671+00:00",
+  "node": "v22.16.0",
+  "runtimeDependencies": 0,
+  "validation": {
+    "nodeTestsPassed": 63,
+    "nodeTestsFailed": 0,
+    "browserChecksPassed": 17,
+    "browserMode": "embedded-source-with-real-HTTP-bridge",
+    "localBenchmarkGames": 12,
+    "benchmarkJournalsAudited": 12,
+    "liveProviderCalls": 0,
+    "realDiscordTested": false,
+    "cloudflareDeployed": false
+  },
+  "metricAndEvidenceDefinitions": 109,
+  "assets": [
+    {
+      "path": "public/analysis-worker.js",
+      "bytes": 305,
+      "gzipBytes": 206
+    },
+    {
+      "path": "public/analytics.js",
+      "bytes": 9906,
+      "gzipBytes": 3606
+    },
+    {
+      "path": "public/game.css",
+      "bytes": 17536,
+      "gzipBytes": 4585
+    },
+    {
+      "path": "public/game.js",
+      "bytes": 30592,
+      "gzipBytes": 10076
+    },
+    {
+      "path": "public/games/dots-and-boxes/analysis.js",
+      "bytes": 6520,
+      "gzipBytes": 2443
+    },
+    {
+      "path": "public/games/dots-and-boxes/rules.js",
+      "bytes": 5688,
+      "gzipBytes": 2008
+    },
+    {
+      "path": "public/index.html",
+      "bytes": 13633,
+      "gzipBytes": 4678
+    }
+  ],
+  "totalPublicBytes": 84180,
+  "totalPublicGzipBytes": 27602
+}

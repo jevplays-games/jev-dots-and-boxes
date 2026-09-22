@@ -1,0 +1,21 @@
+{
+  "name": "jev-dots-and-boxes",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Vanilla Dots and Boxes against JEV with authoritative matches and detailed auditable analytics",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "start": "node scripts/dev.mjs",
+    "dev": "node scripts/dev.mjs",
+    "test": "node scripts/test.mjs",
+    "benchmark": "node bench/run.mjs",
+    "audit": "node scripts/audit.mjs",
+    "export": "node scripts/export.mjs",
+    "test:browser": "python scripts/browser-test.py",
+    "deploy": "npx wrangler deploy",
+    "db:migrate": "npx wrangler d1 migrations apply dots-and-boxes --remote"
+  }
+}

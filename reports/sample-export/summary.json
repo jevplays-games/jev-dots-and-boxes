@@ -1,0 +1,156 @@
+{
+  "schema": "dots-analytics-v1",
+  "matchId": "60af0697-8368-4c75-b9a4-c206734b242d",
+  "mode": "local",
+  "difficulty": "normal",
+  "poolId": "3f5f1380624569f0b61e954b6c260644aa96cc065bd32bde81fbf6783e1f6e2d",
+  "status": "completed",
+  "outcome": "loss",
+  "score": {
+    "human": 0,
+    "jev": 16
+  },
+  "verified": true,
+  "rankedEligible": false,
+  "eventCount": 97,
+  "moveCount": 40,
+  "decisionCount": 27,
+  "sources": {
+    "local": 27
+  },
+  "players": [
+    {
+      "player": 0,
+      "moves": 13,
+      "scoringMoves": 0,
+      "boxes": 0,
+      "doubleCaptures": 0,
+      "newThirdSides": 7,
+      "declinedImmediateCapture": 1,
+      "exactRegret": {
+        "n": 0,
+        "min": null,
+        "max": null,
+        "mean": null,
+        "p50": null,
+        "p95": null,
+        "p99": null
+      },
+      "serverObservedTurnMs": {
+        "n": 13,
+        "min": 0.11635499999999865,
+        "max": 5.396532999999998,
+        "mean": 1.283082692307692,
+        "p50": 0.7437679999999887,
+        "p95": 3.493225599999998,
+        "p99": 5.015871519999996
+      }
+    },
+    {
+      "player": 1,
+      "moves": 27,
+      "scoringMoves": 15,
+      "boxes": 16,
+      "doubleCaptures": 1,
+      "newThirdSides": 9,
+      "declinedImmediateCapture": 0,
+      "exactRegret": {
+        "n": 1,
+        "min": 0,
+        "max": 0,
+        "mean": 0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0
+      },
+      "serverObservedTurnMs": {
+        "n": 27,
+        "min": 0.7482949999999846,
+        "max": 29.116359000000017,
+        "mean": 9.894231962962964,
+        "p50": 10.336759,
+        "p95": 22.684012800000005,
+        "p99": 27.76791684000001
+      }
+    }
+  ],
+  "longestSamePlayerRun": {
+    "human": 1,
+    "jev": 6
+  },
+  "latencyMs": {
+    "n": 27,
+    "min": 0.11042600000001812,
+    "max": 27.457486000000017,
+    "mean": 8.22096007407407,
+    "p50": 8.757055000000008,
+    "p95": 20.554881799999997,
+    "p99": 26.112928500000006
+  },
+  "providerLatencyMs": {
+    "n": 0,
+    "min": null,
+    "max": null,
+    "mean": null,
+    "p50": null,
+    "p95": null,
+    "p99": null
+  },
+  "featureLatencyMs": {
+    "n": 27,
+    "min": 0.023005000000011933,
+    "max": 27.331136000000015,
+    "mean": 8.114503703703706,
+    "p50": 8.668842000000012,
+    "p95": 20.414047000000014,
+    "p99": 25.981047780000008
+  },
+  "confidence": {
+    "n": 0,
+    "min": null,
+    "max": null,
+    "mean": null,
+    "p50": null,
+    "p95": null,
+    "p99": null
+  },
+  "entropyBits": {
+    "n": 0,
+    "min": null,
+    "max": null,
+    "mean": null,
+    "p50": null,
+    "p95": null,
+    "p99": null
+  },
+  "candidateCount": {
+    "n": 27,
+    "min": 1,
+    "max": 39,
+    "mean": 18.296296296296298,
+    "p50": 17,
+    "p95": 36.4,
+    "p99": 38.48
+  },
+  "searchNodes": 493,
+  "searchCacheHits": 0,
+  "exactDecisions": 1,
+  "providerAttempts": 0,
+  "providerFailures": 0,
+  "retries": 0,
+  "fallbackDecisions": 0,
+  "illegalOutputFailures": 0,
+  "knownInputTokens": 0,
+  "knownOutputTokens": 0,
+  "unknownUsageAttempts": 0,
+  "estimatedCostUsd": null,
+  "costUnknownAttempts": 0,
+  "durationMs": 294,
+  "headHash": "af69a59038c1ca9af27823f22644132db67ad48b125a17fdecff0701c4eb0765",
+  "caveats": [
+    "Model confidence is not win probability.",
+    "Server turn elapsed time includes network delay and idle time.",
+    "Regret is null unless every candidate is solved exactly.",
+    "Usage and cost exclude unreported provider consumption."
+  ]
+}

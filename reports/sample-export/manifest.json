@@ -1,0 +1,24 @@
+{
+  "benchmark": true,
+  "seed": 20260922,
+  "pair": 0,
+  "firstPlayer": 0,
+  "mode": "local",
+  "opponent": "random",
+  "profile": {
+    "sourceRevision": "unversioned-local",
+    "rules": "dots-boxes-v1",
+    "analysis": "analysis-v1",
+    "prompt": "choice-v1",
+    "model": "jev-1.13.0",
+    "difficulty": "normal",
+    "search": {
+      "depth": 2,
+      "nodes": 2000,
+      "exactThreshold": 0
+    },
+    "instructions": "Choose the legal edge that maximizes the acting player's final box count. Use the supplied computed facts. Completing one or two boxes retains the move; taking an available box is optional. The search estimate is final JEV minus human boxes; a negative value favors the human. Search estimates are not proofs unless exact is true. Chain handouts may preserve control, but are not always correct. Select only a supplied option."
+  },
+  "node": "v22.16.0",
+  "sourceRevision": "unversioned-local"
+}

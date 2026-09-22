@@ -1,0 +1,20 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "title":"Dots and Boxes auditable event v1",
+  "type":"object",
+  "required":["schema","matchId","sequence","utc","elapsedMs","type","requestId","clock","previousHash","data","hash"],
+  "properties":{
+    "schema":{"const":"dots-analytics-v1"},
+    "matchId":{"type":"string","minLength":1},
+    "sequence":{"type":"integer","minimum":1},
+    "utc":{"type":"string","format":"date-time"},
+    "elapsedMs":{"type":"number","minimum":0},
+    "type":{"enum":["match_created","decision_prepared","provider_attempt","decision_completed","move_committed","ranked_eligibility_voided","decision_lease_expired","player_resigned","match_expired","match_settled","verification_completed"]},
+    "requestId":{"type":["string","null"]},
+    "clock":{"type":"object","required":["domainId","monotonicMs"],"properties":{"domainId":{"type":"string"},"monotonicMs":{"type":"number","minimum":0}}},
+    "previousHash":{"type":"string","pattern":"^[a-f0-9]{64}$"},
+    "hash":{"type":"string","pattern":"^[a-f0-9]{64}$"},
+    "data":{"type":"object"}
+  },
+  "additionalProperties":false
+}

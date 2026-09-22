@@ -1,0 +1,398 @@
+
+> jev-dots-and-boxes@1.0.0 test
+> node scripts/test.mjs
+
+TAP version 13
+# Subtest: canonical JSON sorts keys and stable hashes agree
+ok 1 - canonical JSON sorts keys and stable hashes agree
+  ---
+  duration_ms: 6.589417
+  type: 'test'
+  ...
+# Subtest: valid journal passes structural and gameplay audit
+ok 2 - valid journal passes structural and gameplay audit
+  ---
+  duration_ms: 8.032236
+  type: 'test'
+  ...
+# Subtest: audit rejects modified data
+ok 3 - audit rejects modified data
+  ---
+  duration_ms: 4.056789
+  type: 'test'
+  ...
+# Subtest: audit rejects deleted event
+ok 4 - audit rejects deleted event
+  ---
+  duration_ms: 4.445763
+  type: 'test'
+  ...
+# Subtest: audit rejects reordered events
+ok 5 - audit rejects reordered events
+  ---
+  duration_ms: 2.810866
+  type: 'test'
+  ...
+# Subtest: audit rejects forged outcome
+ok 6 - audit rejects forged outcome
+  ---
+  duration_ms: 3.745451
+  type: 'test'
+  ...
+# Subtest: audit rejects forged final board
+ok 7 - audit rejects forged final board
+  ---
+  duration_ms: 6.350057
+  type: 'test'
+  ...
+# Subtest: summary distinguishes sources, null probabilities and unknown costs
+ok 8 - summary distinguishes sources, null probabilities and unknown costs
+  ---
+  duration_ms: 2.510444
+  type: 'test'
+  ...
+# Subtest: quantiles and entropy are computed from measured data
+ok 9 - quantiles and entropy are computed from measured data
+  ---
+  duration_ms: 0.424338
+  type: 'test'
+  ...
+# Subtest: CSV escapes quotes and neutralizes spreadsheet formula injection
+ok 10 - CSV escapes quotes and neutralizes spreadsheet formula injection
+  ---
+  duration_ms: 0.815596
+  type: 'test'
+  ...
+# (node:2028) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: guest bootstrap, authoritative game, complete replay, CSV and verification
+ok 11 - guest bootstrap, authoritative game, complete replay, CSV and verification
+  ---
+  duration_ms: 427.265658
+  type: 'test'
+  ...
+# Subtest: origin, CSRF and invalid JSON are rejected
+ok 12 - origin, CSRF and invalid JSON are rejected
+  ---
+  duration_ms: 6.028433
+  type: 'test'
+  ...
+# Subtest: ranked requires authenticated Discord and the actual JEV mode
+ok 13 - ranked requires authenticated Discord and the actual JEV mode
+  ---
+  duration_ms: 7.608299
+  type: 'test'
+  ...
+# Subtest: only owner may read, act, export or retrieve event evidence
+ok 14 - only owner may read, act, export or retrieve event evidence
+  ---
+  duration_ms: 6.088334
+  type: 'test'
+  ...
+# Subtest: illegal and stale actions do not mutate state; duplicate requests are idempotent
+ok 15 - illegal and stale actions do not mutate state; duplicate requests are idempotent
+  ---
+  duration_ms: 10.296329
+  type: 'test'
+  ...
+# Subtest: concurrent opponent requests cannot commit two moves or choose a rerolled response
+ok 16 - concurrent opponent requests cannot commit two moves or choose a rerolled response
+  ---
+  duration_ms: 46.728643
+  type: 'test'
+  ...
+# Subtest: provider failure explicitly demotes ranked match and records the failure
+ok 17 - provider failure explicitly demotes ranked match and records the failure
+  ---
+  duration_ms: 12.489647
+  type: 'test'
+  ...
+# Subtest: ranked seats alternate across concessions
+ok 18 - ranked seats alternate across concessions
+  ---
+  duration_ms: 6.286091
+  type: 'test'
+  ...
+# Subtest: a reused launch cannot create another community match; arbitrary IDs are ignored
+ok 19 - a reused launch cannot create another community match; arbitrary IDs are ignored
+  ---
+  duration_ms: 13.367498
+  type: 'test'
+  ...
+# Subtest: launch binding rejects other users and expiration
+ok 20 - launch binding rejects other users and expiration
+  ---
+  duration_ms: 2.87331
+  type: 'test'
+  ...
+# Subtest: client telemetry requires consent and accepts only enumerated fields
+ok 21 - client telemetry requires consent and accepts only enumerated fields
+  ---
+  duration_ms: 5.950436
+  type: 'test'
+  ...
+# Subtest: security headers and logs never include cookies or secret-bearing query strings
+ok 22 - security headers and logs never include cookies or secret-bearing query strings
+  ---
+  duration_ms: 2.52689
+  type: 'test'
+  ...
+# Subtest: leaderboard pools and channel/server scopes remain isolated; ties share rank
+ok 23 - leaderboard pools and channel/server scopes remain isolated; ties share rank
+  ---
+  duration_ms: 8.748833
+  type: 'test'
+  ...
+# Subtest: keyset pagination preserves score ties across pages
+ok 24 - keyset pagination preserves score ties across pages
+  ---
+  duration_ms: 32.738775
+  type: 'test'
+  ...
+# Subtest: complete mocked JEV ranked match retains auditable provider evidence
+ok 25 - complete mocked JEV ranked match retains auditable provider evidence
+  ---
+  duration_ms: 341.420639
+  type: 'test'
+  ...
+# Subtest: source revision change cannot silently alter an existing opponent profile
+ok 26 - source revision change cannot silently alter an existing opponent profile
+  ---
+  duration_ms: 7.418732
+  type: 'test'
+  ...
+# (node:2029) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: Ed25519 signed interaction verifies raw body, freshness and signature
+ok 27 - Ed25519 signed interaction verifies raw body, freshness and signature
+  ---
+  duration_ms: 28.9345
+  type: 'test'
+  ...
+# Subtest: OAuth requests only identify and binds one-time state to the browser session
+ok 28 - OAuth requests only identify and binds one-time state to the browser session
+  ---
+  duration_ms: 16.923143
+  type: 'test'
+  ...
+# Subtest: OAuth success rotates cookie and never retains provider tokens
+ok 29 - OAuth success rotates cookie and never retains provider tokens
+  ---
+  duration_ms: 11.981103
+  type: 'test'
+  ...
+# Subtest: expired session cannot mutate matches
+ok 30 - expired session cannot mutate matches
+  ---
+  duration_ms: 3.575606
+  type: 'test'
+  ...
+# Subtest: logout revokes the server session
+ok 31 - logout revokes the server session
+  ---
+  duration_ms: 6.914155
+  type: 'test'
+  ...
+# Subtest: full signed Discord command issues opaque, user-bound launch and rejects duplicate
+ok 32 - full signed Discord command issues opaque, user-bound launch and rejects duplicate
+  ---
+  duration_ms: 4.096609
+  type: 'test'
+  ...
+# (node:2060) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: accept documented contract and deterministically resolve tied options
+ok 33 - accept documented contract and deterministically resolve tied options
+  ---
+  duration_ms: 1.600546
+  type: 'test'
+  ...
+# Subtest: reject wrong model
+ok 34 - reject wrong model
+  ---
+  duration_ms: 0.307763
+  type: 'test'
+  ...
+# Subtest: reject illegal choice
+ok 35 - reject illegal choice
+  ---
+  duration_ms: 0.286881
+  type: 'test'
+  ...
+# Subtest: reject missing key
+ok 36 - reject missing key
+  ---
+  duration_ms: 0.177116
+  type: 'test'
+  ...
+# Subtest: reject extra key
+ok 37 - reject extra key
+  ---
+  duration_ms: 0.171197
+  type: 'test'
+  ...
+# Subtest: reject bad sum
+ok 38 - reject bad sum
+  ---
+  duration_ms: 0.161793
+  type: 'test'
+  ...
+# Subtest: reject negative probability
+ok 39 - reject negative probability
+  ---
+  duration_ms: 0.101142
+  type: 'test'
+  ...
+# Subtest: reject NaN confidence
+ok 40 - reject NaN confidence
+  ---
+  duration_ms: 0.084768
+  type: 'test'
+  ...
+# Subtest: reject wrong type
+ok 41 - reject wrong type
+  ---
+  duration_ms: 0.224647
+  type: 'test'
+  ...
+# Subtest: reject choice is not argmax
+ok 42 - reject choice is not argmax
+  ---
+  duration_ms: 0.33261
+  type: 'test'
+  ...
+# Subtest: real request structure contains every legal edge and no browser/user context
+ok 43 - real request structure contains every legal edge and no browser/user context
+  ---
+  duration_ms: 17.175852
+  type: 'test'
+  ...
+# Subtest: successful provider call records usage, cost and returned probability evidence
+ok 44 - successful provider call records usage, cost and returned probability evidence
+  ---
+  duration_ms: 24.062441
+  type: 'test'
+  ...
+# Subtest: no key is an explicitly identified fallback and unknown costs are null
+ok 45 - no key is an explicitly identified fallback and unknown costs are null
+  ---
+  duration_ms: 3.467643
+  type: 'test'
+  ...
+# Subtest: local mode never calls the provider or pretends to be JEV
+ok 46 - local mode never calls the provider or pretends to be JEV
+  ---
+  duration_ms: 2.781091
+  type: 'test'
+  ...
+# Subtest: transient HTTP failure gets one bounded retry and complete attempt accounting
+ok 47 - transient HTTP failure gets one bounded retry and complete attempt accounting
+  ---
+  duration_ms: 254.973667
+  type: 'test'
+  ...
+# Subtest: a long Retry-After is respected without an early retry
+ok 48 - a long Retry-After is respected without an early retry
+  ---
+  duration_ms: 4.899356
+  type: 'test'
+  ...
+# Subtest: malformed response is not repeatedly sampled
+ok 49 - malformed response is not repeatedly sampled
+  ---
+  duration_ms: 3.854544
+  type: 'test'
+  ...
+# Subtest: timeout produces at most two attempts
+ok 50 - timeout produces at most two attempts
+  ---
+  duration_ms: 264.144359
+  type: 'test'
+  ...
+# Subtest: only one legal move bypasses API with a forced source
+ok 51 - only one legal move bypasses API with a forced source
+  ---
+  duration_ms: 2.21494
+  type: 'test'
+  ...
+# Subtest: 4x4 default has 40 edges, 16 boxes and correct adjacency
+ok 52 - 4x4 default has 40 edges, 16 boxes and correct adjacency
+  ---
+  duration_ms: 1.78932
+  type: 'test'
+  ...
+# Subtest: all supported sizes have unique geometry and round-trip serialization
+ok 53 - all supported sizes have unique geometry and round-trip serialization
+  ---
+  duration_ms: 1.828969
+  type: 'test'
+  ...
+# Subtest: two boxes award two points but only one edge and retained turn
+ok 54 - two boxes award two points but only one edge and retained turn
+  ---
+  duration_ms: 0.343316
+  type: 'test'
+  ...
+# Subtest: illegal moves rejected without mutation
+ok 55 - illegal moves rejected without mutation
+  ---
+  duration_ms: 0.37936
+  type: 'test'
+  ...
+# Subtest: capturing an available box is optional
+ok 56 - capturing an available box is optional
+  ---
+  duration_ms: 0.227942
+  type: 'test'
+  ...
+# Subtest: exhaustively enumerate all 1x1 edge orders and both starters
+ok 57 - exhaustively enumerate all 1x1 edge orders and both starters
+  ---
+  duration_ms: 3.388945
+  type: 'test'
+  ...
+# Subtest: 1,000 seeded legal games preserve all invariants and deterministic replays
+ok 58 - 1,000 seeded legal games preserve all invariants and deterministic replays
+  ---
+  duration_ms: 432.279742
+  type: 'test'
+  ...
+# Subtest: reject invalid replay versions, excess moves and inconsistent state arrays
+ok 59 - reject invalid replay versions, excess moves and inconsistent state arrays
+  ---
+  duration_ms: 0.339591
+  type: 'test'
+  ...
+# Subtest: bounded solver matches independent exhaustive oracle on small endgames
+ok 60 - bounded solver matches independent exhaustive oracle on small endgames
+  ---
+  duration_ms: 26.494186
+  type: 'test'
+  ...
+# Subtest: search budgets are hard bounded and unsolved regret remains null
+ok 61 - search budgets are hard bounded and unsolved regret remains null
+  ---
+  duration_ms: 25.254022
+  type: 'test'
+  ...
+# Subtest: fully drawn perimeter forms a four-box loop, boundary ports stay separate
+ok 62 - fully drawn perimeter forms a four-box loop, boundary ports stay separate
+  ---
+  duration_ms: 0.281333
+  type: 'test'
+  ...
+# Subtest: local heuristic is deterministic
+ok 63 - local heuristic is deterministic
+  ---
+  duration_ms: 0.228293
+  type: 'test'
+  ...
+1..63
+# tests 63
+# suites 0
+# pass 63
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1005.494073

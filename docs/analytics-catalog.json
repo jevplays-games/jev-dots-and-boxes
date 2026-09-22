@@ -1,0 +1,994 @@
+{
+  "schema": "dots-metric-catalog-v1",
+  "schemaVersion": 1,
+  "primaryEvidence": "Full match JSON with hash-linked event journal",
+  "definitions": "ANALYTICS.md",
+  "count": 109,
+  "statistics": {
+    "quantiles": "Linear interpolation at (n-1)*p after filtering finite numeric observations",
+    "unknown": "Null or explicit absent coverage, never silently zero"
+  },
+  "metrics": [
+    {
+      "id": "match.id",
+      "category": "provenance",
+      "unit": "identifier",
+      "source": "match",
+      "evidenceClass": "server-recorded",
+      "definition": "Unique match identifier.",
+      "missing": "Required."
+    },
+    {
+      "id": "match.poolId",
+      "category": "provenance",
+      "unit": "sha256",
+      "source": "match",
+      "evidenceClass": "server-recorded",
+      "definition": "Hash of versioned opponent configuration; ranking cohort key.",
+      "missing": "Required."
+    },
+    {
+      "id": "match.profile",
+      "category": "provenance",
+      "unit": "object",
+      "source": "match",
+      "evidenceClass": "server-recorded",
+      "definition": "Pinned rules, source revision, model, prompt and search settings.",
+      "missing": "Not proof of a live provider call."
+    },
+    {
+      "id": "match.manifest",
+      "category": "provenance",
+      "unit": "object",
+      "source": "match",
+      "evidenceClass": "server-recorded",
+      "definition": "Runtime/deployment experiment provenance.",
+      "missing": "Some runtime fields depend on environment."
+    },
+    {
+      "id": "match.mode",
+      "category": "provenance",
+      "unit": "enum",
+      "source": "match",
+      "evidenceClass": "server-recorded",
+      "definition": "Current jev or local execution mode.",
+      "missing": "Required; sources identify earlier fallback."
+    },
+    {
+      "id": "match.firstPlayer",
+      "category": "provenance",
+      "unit": "player",
+      "source": "match.state.firstPlayer",
+      "evidenceClass": "server-recorded",
+      "definition": "Starting seat: 0 human/baseline, 1 opponent.",
+      "missing": "Required."
+    },
+    {
+      "id": "event.sequence",
+      "category": "provenance",
+      "unit": "integer",
+      "source": "events[]",
+      "evidenceClass": "server-recorded",
+      "definition": "One-based contiguous journal order.",
+      "missing": "Required."
+    },
+    {
+      "id": "event.utc",
+      "category": "provenance",
+      "unit": "UTC timestamp",
+      "source": "events[]",
+      "evidenceClass": "server-recorded",
+      "definition": "Recorded wall-clock event time.",
+      "missing": "Clock adjustment is possible."
+    },
+    {
+      "id": "event.elapsedMs",
+      "category": "provenance",
+      "unit": "ms",
+      "source": "events[]",
+      "evidenceClass": "server-recorded",
+      "definition": "Nonnegative wall-clock elapsed since match creation.",
+      "missing": "Not a cross-host monotonic guarantee."
+    },
+    {
+      "id": "event.clock.domainId",
+      "category": "provenance",
+      "unit": "identifier",
+      "source": "events[].clock",
+      "evidenceClass": "server-recorded",
+      "definition": "Process/isolate monotonic clock identity.",
+      "missing": "Required by current schema."
+    },
+    {
+      "id": "event.clock.monotonicMs",
+      "category": "provenance",
+      "unit": "ms",
+      "source": "events[].clock",
+      "evidenceClass": "server-recorded",
+      "definition": "performance.now in the identified domain.",
+      "missing": "Do not subtract across domains."
+    },
+    {
+      "id": "event.requestId",
+      "category": "provenance",
+      "unit": "identifier",
+      "source": "events[]",
+      "evidenceClass": "server-recorded",
+      "definition": "Causal client request ID where applicable.",
+      "missing": "Null for non-request events."
+    },
+    {
+      "id": "event.previousHash",
+      "category": "provenance",
+      "unit": "sha256",
+      "source": "events[]",
+      "evidenceClass": "server-recorded",
+      "definition": "Prior event hash, zero head for first event.",
+      "missing": "Required."
+    },
+    {
+      "id": "event.hash",
+      "category": "provenance",
+      "unit": "sha256",
+      "source": "events[]",
+      "evidenceClass": "server-recorded",
+      "definition": "Hash of canonical event excluding itself.",
+      "missing": "Not an external signature."
+    },
+    {
+      "id": "summary.headHash",
+      "category": "provenance",
+      "unit": "sha256",
+      "source": "summary",
+      "evidenceClass": "server-recorded",
+      "definition": "Latest retained journal hash.",
+      "missing": "Null for no events."
+    },
+    {
+      "id": "summary.eventCount",
+      "category": "provenance",
+      "unit": "count",
+      "source": "summary",
+      "evidenceClass": "server-recorded",
+      "definition": "Number of recorded events.",
+      "missing": "Zero for no events."
+    },
+    {
+      "id": "move.player",
+      "category": "gameplay",
+      "unit": "player",
+      "source": "move_committed",
+      "evidenceClass": "rules-computed",
+      "definition": "Actor before the transition.",
+      "missing": "Required."
+    },
+    {
+      "id": "move.edgeId",
+      "category": "gameplay",
+      "unit": "edge",
+      "source": "move_committed",
+      "evidenceClass": "rules-computed",
+      "definition": "Stable selected edge ID.",
+      "missing": "Required."
+    },
+    {
+      "id": "move.capturedBoxes",
+      "category": "gameplay",
+      "unit": "box IDs",
+      "source": "move_committed",
+      "evidenceClass": "rules-computed",
+      "definition": "Zero, one or two boxes claimed in the transition.",
+      "missing": "Empty array means no capture."
+    },
+    {
+      "id": "move.retainsMove",
+      "category": "gameplay",
+      "unit": "boolean",
+      "source": "move_committed",
+      "evidenceClass": "rules-computed",
+      "definition": "Whether a nonterminal capture keeps the actor.",
+      "missing": "See terminal state separately."
+    },
+    {
+      "id": "move.preStateHash",
+      "category": "gameplay",
+      "unit": "sha256",
+      "source": "move_committed",
+      "evidenceClass": "rules-computed",
+      "definition": "Hash of serialized pre-move state.",
+      "missing": "Required."
+    },
+    {
+      "id": "move.postStateHash",
+      "category": "gameplay",
+      "unit": "sha256",
+      "source": "move_committed",
+      "evidenceClass": "rules-computed",
+      "definition": "Hash of serialized post-move state.",
+      "missing": "Required."
+    },
+    {
+      "id": "move.captureAvailable",
+      "category": "gameplay",
+      "unit": "boolean",
+      "source": "move_committed",
+      "evidenceClass": "rules-computed",
+      "definition": "Whether a scoring action existed before this move.",
+      "missing": "A declined capture is not necessarily poor play."
+    },
+    {
+      "id": "summary.score",
+      "category": "gameplay",
+      "unit": "boxes",
+      "source": "summary",
+      "evidenceClass": "rules-computed",
+      "definition": "Counts of box ownership by player.",
+      "missing": "Partial on administrative termination."
+    },
+    {
+      "id": "summary.outcome",
+      "category": "gameplay",
+      "unit": "enum",
+      "source": "summary",
+      "evidenceClass": "rules-computed",
+      "definition": "Win/loss/draw or administrative outcome.",
+      "missing": "Null for unfinished."
+    },
+    {
+      "id": "summary.moveCount",
+      "category": "gameplay",
+      "unit": "count",
+      "source": "summary",
+      "evidenceClass": "rules-computed",
+      "definition": "Number of committed edges.",
+      "missing": "At most 40 on hosted board."
+    },
+    {
+      "id": "summary.players.moves",
+      "category": "gameplay",
+      "unit": "count",
+      "source": "summary.players[]",
+      "evidenceClass": "rules-computed",
+      "definition": "Committed actions by actor.",
+      "missing": "Zero when not yet moved."
+    },
+    {
+      "id": "summary.players.scoringMoves",
+      "category": "gameplay",
+      "unit": "count",
+      "source": "summary.players[]",
+      "evidenceClass": "rules-computed",
+      "definition": "Actions capturing at least one box.",
+      "missing": "Zero when none."
+    },
+    {
+      "id": "summary.players.boxes",
+      "category": "gameplay",
+      "unit": "count",
+      "source": "summary.players[]",
+      "evidenceClass": "rules-computed",
+      "definition": "Sum of captured boxes.",
+      "missing": "Partial for forfeits."
+    },
+    {
+      "id": "summary.players.doubleCaptures",
+      "category": "gameplay",
+      "unit": "count",
+      "source": "summary.players[]",
+      "evidenceClass": "rules-computed",
+      "definition": "Actions claiming two boxes.",
+      "missing": "Zero when none."
+    },
+    {
+      "id": "summary.players.newThirdSides",
+      "category": "gameplay",
+      "unit": "count",
+      "source": "summary.players[]",
+      "evidenceClass": "rules-computed",
+      "definition": "Sum of newly exposed three-sided boxes.",
+      "missing": "Descriptive; not opponent gifts in every case."
+    },
+    {
+      "id": "summary.players.declinedImmediateCapture",
+      "category": "gameplay",
+      "unit": "count",
+      "source": "summary.players[]",
+      "evidenceClass": "rules-computed",
+      "definition": "Non-capturing actions with a capture available.",
+      "missing": "Not inherently a mistake."
+    },
+    {
+      "id": "summary.longestSamePlayerRun",
+      "category": "gameplay",
+      "unit": "edges",
+      "source": "summary",
+      "evidenceClass": "rules-computed",
+      "definition": "Longest uninterrupted sequence by each actor.",
+      "missing": "Includes the first action of the sequence."
+    },
+    {
+      "id": "summary.durationMs",
+      "category": "gameplay",
+      "unit": "ms",
+      "source": "summary",
+      "evidenceClass": "rules-computed",
+      "definition": "Finished time or current time minus creation.",
+      "missing": "Includes idle and network time."
+    },
+    {
+      "id": "candidate.edgeId",
+      "category": "candidates",
+      "unit": "edge",
+      "source": "decision_prepared.candidates[]",
+      "evidenceClass": "computed feature / bounded estimate",
+      "definition": "Every legal root edge before selection.",
+      "missing": "Never silently pruned from evidence."
+    },
+    {
+      "id": "candidate.capturesNow",
+      "category": "candidates",
+      "unit": "boxes",
+      "source": "candidate",
+      "evidenceClass": "computed feature / bounded estimate",
+      "definition": "Immediate boxes captured by action.",
+      "missing": "0, 1 or 2."
+    },
+    {
+      "id": "candidate.nextPlayer",
+      "category": "candidates",
+      "unit": "player",
+      "source": "candidate",
+      "evidenceClass": "computed feature / bounded estimate",
+      "definition": "Actor after applying this action.",
+      "missing": "Null at terminal state."
+    },
+    {
+      "id": "candidate.newThirdSides",
+      "category": "candidates",
+      "unit": "boxes",
+      "source": "candidate",
+      "evidenceClass": "computed feature / bounded estimate",
+      "definition": "Boxes changed from two sides to three.",
+      "missing": "Zero possible."
+    },
+    {
+      "id": "candidate.capturableAfter",
+      "category": "candidates",
+      "unit": "boxes",
+      "source": "candidate",
+      "evidenceClass": "computed feature / bounded estimate",
+      "definition": "Unowned three-sided boxes after move.",
+      "missing": "Not automatically available to opponent."
+    },
+    {
+      "id": "candidate.opponentImmediateCapture",
+      "category": "candidates",
+      "unit": "boxes",
+      "source": "candidate",
+      "evidenceClass": "computed feature / bounded estimate",
+      "definition": "Immediate capture exposure when control passes.",
+      "missing": "See next player."
+    },
+    {
+      "id": "candidate.safeMovesAfter",
+      "category": "candidates",
+      "unit": "count",
+      "source": "candidate",
+      "evidenceClass": "computed feature / bounded estimate",
+      "definition": "Non-capturing continuations creating no third side.",
+      "missing": "Zero means none."
+    },
+    {
+      "id": "candidate.componentsAfter",
+      "category": "candidates",
+      "unit": "objects",
+      "source": "candidate",
+      "evidenceClass": "computed feature / bounded estimate",
+      "definition": "Chain/loop/unclassified geometry summaries.",
+      "missing": "Unclassified is retained, not guessed."
+    },
+    {
+      "id": "candidate.search.estimate",
+      "category": "candidates",
+      "unit": "box margin",
+      "source": "candidate.search",
+      "evidenceClass": "computed feature / bounded estimate",
+      "definition": "Bounded predicted JEV-minus-human final margin.",
+      "missing": "Not probability; absent when no search."
+    },
+    {
+      "id": "candidate.search.exact",
+      "category": "candidates",
+      "unit": "boolean",
+      "source": "candidate.search",
+      "evidenceClass": "computed feature / bounded estimate",
+      "definition": "Whether full continuation was solved for that root.",
+      "missing": "False does not imply incorrect estimate."
+    },
+    {
+      "id": "candidate.search.nodes",
+      "category": "candidates",
+      "unit": "count",
+      "source": "candidate.search",
+      "evidenceClass": "computed feature / bounded estimate",
+      "definition": "Expanded search nodes for this candidate.",
+      "missing": "Zero/absent for no search."
+    },
+    {
+      "id": "candidate.search.cacheHits",
+      "category": "candidates",
+      "unit": "count",
+      "source": "candidate.search",
+      "evidenceClass": "computed feature / bounded estimate",
+      "definition": "Memoized evaluation hits.",
+      "missing": "Zero/absent for no search."
+    },
+    {
+      "id": "candidate.search.requestedDepth",
+      "category": "candidates",
+      "unit": "edges",
+      "source": "candidate.search",
+      "evidenceClass": "computed feature / bounded estimate",
+      "definition": "Requested depth in edge placements; search may stop at a budget cutoff.",
+      "missing": "Absent for no search. Inspect exact and cutoffs; requested depth is not proof that the tree completed."
+    },
+    {
+      "id": "candidate.selected",
+      "category": "candidates",
+      "unit": "boolean",
+      "source": "candidates export",
+      "evidenceClass": "computed feature / bounded estimate",
+      "definition": "Join to completed selected edge.",
+      "missing": "False if incomplete or not selected."
+    },
+    {
+      "id": "candidate.probability",
+      "category": "candidates",
+      "unit": "probability",
+      "source": "candidates export",
+      "evidenceClass": "computed feature / bounded estimate",
+      "definition": "Joined model option probability.",
+      "missing": "Null for omitted/unevaluated/local options, not zero."
+    },
+    {
+      "id": "move.exactRegret",
+      "category": "candidates",
+      "unit": "boxes",
+      "source": "move_committed",
+      "evidenceClass": "computed feature / bounded estimate",
+      "definition": "Actor-relative best exact margin minus chosen exact margin.",
+      "missing": "Null unless every alternative is solved."
+    },
+    {
+      "id": "summary.exactDecisions",
+      "category": "candidates",
+      "unit": "count",
+      "source": "summary",
+      "evidenceClass": "computed feature / bounded estimate",
+      "definition": "Decisions with all candidate continuations exact.",
+      "missing": "Not all such decisions require provider inference."
+    },
+    {
+      "id": "summary.searchNodes",
+      "category": "candidates",
+      "unit": "count",
+      "source": "summary",
+      "evidenceClass": "computed feature / bounded estimate",
+      "definition": "Sum of recorded search nodes over decisions.",
+      "missing": "No hidden work extrapolation."
+    },
+    {
+      "id": "summary.searchCacheHits",
+      "category": "candidates",
+      "unit": "count",
+      "source": "summary",
+      "evidenceClass": "computed feature / bounded estimate",
+      "definition": "Sum of search cache hits.",
+      "missing": "No cache hit ratio without denominator."
+    },
+    {
+      "id": "decision.decisionId",
+      "category": "decision",
+      "unit": "identifier",
+      "source": "decision_prepared/completed",
+      "evidenceClass": "server-recorded / provider-reported",
+      "definition": "Causal ID linking preparation, attempts, decision and move.",
+      "missing": "Required for opponent decisions."
+    },
+    {
+      "id": "decision.request",
+      "category": "decision",
+      "unit": "object",
+      "source": "decision_prepared",
+      "evidenceClass": "server-recorded / provider-reported",
+      "definition": "Exact structured model request without credentials.",
+      "missing": "May be prepared without a provider call."
+    },
+    {
+      "id": "decision.requestHash",
+      "category": "decision",
+      "unit": "sha256",
+      "source": "decision_prepared/completed",
+      "evidenceClass": "server-recorded / provider-reported",
+      "definition": "Hash of exact structured request.",
+      "missing": "Not a hash of secret headers."
+    },
+    {
+      "id": "decision.stateHash",
+      "category": "decision",
+      "unit": "sha256",
+      "source": "decision_prepared/completed",
+      "evidenceClass": "server-recorded / provider-reported",
+      "definition": "State binding for the decision.",
+      "missing": "Required."
+    },
+    {
+      "id": "decision.source",
+      "category": "decision",
+      "unit": "enum",
+      "source": "decision_completed",
+      "evidenceClass": "server-recorded / provider-reported",
+      "definition": "jev/local/forced/solver/fallback origin.",
+      "missing": "Never infer source from configured model alone."
+    },
+    {
+      "id": "decision.response",
+      "category": "decision",
+      "unit": "object",
+      "source": "decision_completed",
+      "evidenceClass": "server-recorded / provider-reported",
+      "definition": "Validated successful structured model response.",
+      "missing": "Absent for no provider success; raw error bodies excluded."
+    },
+    {
+      "id": "decision.model",
+      "category": "decision",
+      "unit": "identifier",
+      "source": "decision_completed",
+      "evidenceClass": "server-recorded / provider-reported",
+      "definition": "Configured pinned model, checked on live success.",
+      "missing": "Local source means not actually called."
+    },
+    {
+      "id": "decision.probabilities",
+      "category": "decision",
+      "unit": "distribution",
+      "source": "decision_completed",
+      "evidenceClass": "server-recorded / provider-reported",
+      "definition": "Complete distribution over admitted model options.",
+      "missing": "Null for non-model decisions."
+    },
+    {
+      "id": "decision.confidence",
+      "category": "decision",
+      "unit": "unit interval",
+      "source": "decision_completed",
+      "evidenceClass": "server-recorded / provider-reported",
+      "definition": "Provider certainty statistic.",
+      "missing": "Null without model; not win probability."
+    },
+    {
+      "id": "decision.entropyBits",
+      "category": "decision",
+      "unit": "bits",
+      "source": "decision_completed",
+      "evidenceClass": "server-recorded / provider-reported",
+      "definition": "Negative sum p log2 p.",
+      "missing": "Null without a distribution."
+    },
+    {
+      "id": "decision.normalizedEntropy",
+      "category": "decision",
+      "unit": "unit interval",
+      "source": "decision_completed",
+      "evidenceClass": "server-recorded / provider-reported",
+      "definition": "Entropy divided by log2 option count.",
+      "missing": "Null without distribution; 0 for singleton."
+    },
+    {
+      "id": "decision.topGap",
+      "category": "decision",
+      "unit": "probability difference",
+      "source": "decision_completed",
+      "evidenceClass": "server-recorded / provider-reported",
+      "definition": "Top minus second probability.",
+      "missing": "Null without distribution."
+    },
+    {
+      "id": "decision.candidateCount",
+      "category": "decision",
+      "unit": "count",
+      "source": "decision_completed",
+      "evidenceClass": "server-recorded / provider-reported",
+      "definition": "All legal candidate count.",
+      "missing": "Required."
+    },
+    {
+      "id": "decision.admissibleCount",
+      "category": "decision",
+      "unit": "count",
+      "source": "decision_completed",
+      "evidenceClass": "server-recorded / provider-reported",
+      "definition": "Number of options presented after exact-only reduction.",
+      "missing": "Not heuristic evidence pruning."
+    },
+    {
+      "id": "decision.requestBytes",
+      "category": "decision",
+      "unit": "bytes",
+      "source": "decision_completed",
+      "evidenceClass": "server-recorded / provider-reported",
+      "definition": "UTF-8 serialized request size.",
+      "missing": "Prepared size; not network billable bytes."
+    },
+    {
+      "id": "summary.sources",
+      "category": "decision",
+      "unit": "counts by enum",
+      "source": "summary",
+      "evidenceClass": "server-recorded / provider-reported",
+      "definition": "Decision counts grouped by source.",
+      "missing": "Missing key means no recorded source."
+    },
+    {
+      "id": "summary.decisionCount",
+      "category": "decision",
+      "unit": "count",
+      "source": "summary",
+      "evidenceClass": "server-recorded / provider-reported",
+      "definition": "Number of completed opponent decision records.",
+      "missing": "May differ from move count."
+    },
+    {
+      "id": "decision.featureMs",
+      "category": "performance",
+      "unit": "ms",
+      "source": "decision_completed",
+      "evidenceClass": "measured",
+      "definition": "Elapsed candidate feature/search computation.",
+      "missing": "Null/absent only when unavailable."
+    },
+    {
+      "id": "decision.totalMs",
+      "category": "performance",
+      "unit": "ms",
+      "source": "decision_completed",
+      "evidenceClass": "measured",
+      "definition": "Feature and evaluation duration including retries.",
+      "missing": "Not browser rendering latency."
+    },
+    {
+      "id": "attempt.latencyMs",
+      "category": "performance",
+      "unit": "ms",
+      "source": "provider_attempt",
+      "evidenceClass": "measured",
+      "definition": "Measured single attempt duration.",
+      "missing": "Aborted unrecorded requests remain unknown."
+    },
+    {
+      "id": "move.turnElapsedMs",
+      "category": "performance",
+      "unit": "ms",
+      "source": "move_committed",
+      "evidenceClass": "measured",
+      "definition": "Server time since prior transition.",
+      "missing": "Includes idle and transport."
+    },
+    {
+      "id": "move.commitComputeMs",
+      "category": "performance",
+      "unit": "ms",
+      "source": "move_committed",
+      "evidenceClass": "measured",
+      "definition": "Recorded commit computation interval.",
+      "missing": "Does not include all database or network latency."
+    },
+    {
+      "id": "summary.latencyMs",
+      "category": "performance",
+      "unit": "statistics",
+      "source": "summary",
+      "evidenceClass": "measured",
+      "definition": "n/min/max/mean/p50/p95/p99 for decision totals.",
+      "missing": "Null moments for no finite observations."
+    },
+    {
+      "id": "summary.providerLatencyMs",
+      "category": "performance",
+      "unit": "statistics",
+      "source": "summary",
+      "evidenceClass": "measured",
+      "definition": "Attempt latency statistics.",
+      "missing": "Failures included when timed."
+    },
+    {
+      "id": "summary.featureLatencyMs",
+      "category": "performance",
+      "unit": "statistics",
+      "source": "summary",
+      "evidenceClass": "measured",
+      "definition": "Feature duration statistics.",
+      "missing": "Use n to inspect coverage."
+    },
+    {
+      "id": "summary.confidence",
+      "category": "performance",
+      "unit": "statistics",
+      "source": "summary",
+      "evidenceClass": "measured",
+      "definition": "Statistics of finite model confidence values.",
+      "missing": "Local decisions excluded, not treated as zero."
+    },
+    {
+      "id": "summary.entropyBits",
+      "category": "performance",
+      "unit": "statistics",
+      "source": "summary",
+      "evidenceClass": "measured",
+      "definition": "Statistics of recorded model entropy.",
+      "missing": "Missing model decisions excluded."
+    },
+    {
+      "id": "summary.candidateCount",
+      "category": "performance",
+      "unit": "statistics",
+      "source": "summary",
+      "evidenceClass": "measured",
+      "definition": "Statistics of legal candidate counts.",
+      "missing": "Across recorded decisions only."
+    },
+    {
+      "id": "attempt.attempt",
+      "category": "reliability-and-cost",
+      "unit": "ordinal",
+      "source": "provider_attempt",
+      "evidenceClass": "server-measured / provider-reported",
+      "definition": "1-based attempt number for a decision.",
+      "missing": "At most two ordinary attempts."
+    },
+    {
+      "id": "attempt.ok",
+      "category": "reliability-and-cost",
+      "unit": "boolean",
+      "source": "provider_attempt",
+      "evidenceClass": "server-measured / provider-reported",
+      "definition": "Response passed the adapter contract.",
+      "missing": "HTTP 200 alone is insufficient."
+    },
+    {
+      "id": "attempt.status",
+      "category": "reliability-and-cost",
+      "unit": "HTTP code",
+      "source": "provider_attempt",
+      "evidenceClass": "server-measured / provider-reported",
+      "definition": "Provider HTTP status.",
+      "missing": "Null without a response."
+    },
+    {
+      "id": "attempt.errorCode",
+      "category": "reliability-and-cost",
+      "unit": "enum-like code",
+      "source": "provider_attempt",
+      "evidenceClass": "server-measured / provider-reported",
+      "definition": "Safe bounded failure classification.",
+      "missing": "Null on success."
+    },
+    {
+      "id": "attempt.responseBytes",
+      "category": "reliability-and-cost",
+      "unit": "bytes",
+      "source": "provider_attempt",
+      "evidenceClass": "server-measured / provider-reported",
+      "definition": "Size of successfully parsed UTF-8 response.",
+      "missing": "Null/absent for failure where unrecorded."
+    },
+    {
+      "id": "attempt.usage",
+      "category": "reliability-and-cost",
+      "unit": "tokens",
+      "source": "provider_attempt",
+      "evidenceClass": "server-measured / provider-reported",
+      "definition": "Reported input/output token counters.",
+      "missing": "Null if missing/invalid, not estimated."
+    },
+    {
+      "id": "attempt.estimatedCostUsd",
+      "category": "reliability-and-cost",
+      "unit": "USD",
+      "source": "provider_attempt",
+      "evidenceClass": "server-measured / provider-reported",
+      "definition": "Reported usage times configured rates per million tokens.",
+      "missing": "Null when rates/usage unknown."
+    },
+    {
+      "id": "summary.providerAttempts",
+      "category": "reliability-and-cost",
+      "unit": "count",
+      "source": "summary",
+      "evidenceClass": "server-measured / provider-reported",
+      "definition": "Recorded HTTP attempt count.",
+      "missing": "Does not claim detection of every crash-orphan request."
+    },
+    {
+      "id": "summary.providerFailures",
+      "category": "reliability-and-cost",
+      "unit": "count",
+      "source": "summary",
+      "evidenceClass": "server-measured / provider-reported",
+      "definition": "Recorded attempts with ok=false.",
+      "missing": "Not a total reliability denominator by itself."
+    },
+    {
+      "id": "summary.retries",
+      "category": "reliability-and-cost",
+      "unit": "count",
+      "source": "summary",
+      "evidenceClass": "server-measured / provider-reported",
+      "definition": "Recorded attempts numbered greater than 1.",
+      "missing": "Zero when none."
+    },
+    {
+      "id": "summary.fallbackDecisions",
+      "category": "reliability-and-cost",
+      "unit": "count",
+      "source": "summary",
+      "evidenceClass": "server-measured / provider-reported",
+      "definition": "Completed fallback choices.",
+      "missing": "Disqualifies ranked outcome."
+    },
+    {
+      "id": "summary.illegalOutputFailures",
+      "category": "reliability-and-cost",
+      "unit": "count",
+      "source": "summary",
+      "evidenceClass": "server-measured / provider-reported",
+      "definition": "Attempts classified invalid_response.",
+      "missing": "Other error categories counted separately."
+    },
+    {
+      "id": "summary.knownInputTokens",
+      "category": "reliability-and-cost",
+      "unit": "tokens",
+      "source": "summary",
+      "evidenceClass": "server-measured / provider-reported",
+      "definition": "Sum of reported input token usage.",
+      "missing": "Coverage in unknownUsageAttempts."
+    },
+    {
+      "id": "summary.knownOutputTokens",
+      "category": "reliability-and-cost",
+      "unit": "tokens",
+      "source": "summary",
+      "evidenceClass": "server-measured / provider-reported",
+      "definition": "Sum of reported output token usage.",
+      "missing": "Coverage in unknownUsageAttempts."
+    },
+    {
+      "id": "summary.unknownUsageAttempts",
+      "category": "reliability-and-cost",
+      "unit": "count",
+      "source": "summary",
+      "evidenceClass": "server-measured / provider-reported",
+      "definition": "Attempts without valid token usage.",
+      "missing": "Zero does not account for unrecorded crash consumption."
+    },
+    {
+      "id": "summary.estimatedCostUsd",
+      "category": "reliability-and-cost",
+      "unit": "USD",
+      "source": "summary",
+      "evidenceClass": "server-measured / provider-reported",
+      "definition": "Sum of finite estimates if any.",
+      "missing": "Null when none; may be only known subtotal."
+    },
+    {
+      "id": "summary.costUnknownAttempts",
+      "category": "reliability-and-cost",
+      "unit": "count",
+      "source": "summary",
+      "evidenceClass": "server-measured / provider-reported",
+      "definition": "Attempts without finite cost estimate.",
+      "missing": "Display beside the known subtotal."
+    },
+    {
+      "id": "audit.ok",
+      "category": "integrity-and-operations",
+      "unit": "boolean",
+      "source": "audit export",
+      "evidenceClass": "server-audited / client-asserted where marked",
+      "definition": "Hash/order/transition/provenance checks passed.",
+      "missing": "Not a public signature or anti-solver proof."
+    },
+    {
+      "id": "audit.errors",
+      "category": "integrity-and-operations",
+      "unit": "messages",
+      "source": "audit export",
+      "evidenceClass": "server-audited / client-asserted where marked",
+      "definition": "Concrete failed invariant checks.",
+      "missing": "Empty array for success."
+    },
+    {
+      "id": "summary.verified",
+      "category": "integrity-and-operations",
+      "unit": "boolean",
+      "source": "summary",
+      "evidenceClass": "server-audited / client-asserted where marked",
+      "definition": "Server settlement replay verification succeeded.",
+      "missing": "Practice can be verified without ranked eligibility."
+    },
+    {
+      "id": "summary.rankedEligible",
+      "category": "integrity-and-operations",
+      "unit": "boolean",
+      "source": "summary",
+      "evidenceClass": "server-audited / client-asserted where marked",
+      "definition": "Ranked flag and verification both true.",
+      "missing": "Provider failures exclude official cohort."
+    },
+    {
+      "id": "operational.route",
+      "category": "integrity-and-operations",
+      "unit": "normalized route",
+      "source": "operational_events",
+      "evidenceClass": "server-audited / client-asserted where marked",
+      "definition": "Redacted route category, never arbitrary query strings.",
+      "missing": "Unknown route grouped as /api/unknown."
+    },
+    {
+      "id": "operational.status",
+      "category": "integrity-and-operations",
+      "unit": "HTTP code",
+      "source": "operational_events",
+      "evidenceClass": "server-audited / client-asserted where marked",
+      "definition": "API response status.",
+      "missing": "Best-effort logging."
+    },
+    {
+      "id": "operational.latencyMs",
+      "category": "integrity-and-operations",
+      "unit": "ms",
+      "source": "operational_events",
+      "evidenceClass": "server-audited / client-asserted where marked",
+      "definition": "API processing duration.",
+      "missing": "Not full client-perceived load time."
+    },
+    {
+      "id": "client.telemetry",
+      "category": "integrity-and-operations",
+      "unit": "allowlisted fields",
+      "source": "operational_events",
+      "evidenceClass": "server-audited / client-asserted where marked",
+      "definition": "Optional render/visibility/network diagnostics.",
+      "missing": "Opt-in, spoofable, not scoring evidence."
+    },
+    {
+      "id": "leaderboard.scoreRate",
+      "category": "integrity-and-operations",
+      "unit": "unit interval",
+      "source": "leaderboard",
+      "evidenceClass": "server-audited / client-asserted where marked",
+      "definition": "Mean of each starting-seat outcome score rate.",
+      "missing": "Provisional until ten settled games each seat."
+    },
+    {
+      "id": "benchmark.pairInterval",
+      "category": "integrity-and-operations",
+      "unit": "interval",
+      "source": "benchmark summary",
+      "evidenceClass": "server-audited / client-asserted where marked",
+      "definition": "Bootstrap interval resampling paired seeds.",
+      "missing": "Small sample, baseline-specific; not universal strength."
+    },
+    {
+      "id": "benchmark.providerAttempts",
+      "category": "integrity-and-operations",
+      "unit": "count",
+      "source": "benchmark summary",
+      "evidenceClass": "server-audited / client-asserted where marked",
+      "definition": "Actual provider attempts in experiment.",
+      "missing": "Zero for included local smoke run."
+    }
+  ]
+}

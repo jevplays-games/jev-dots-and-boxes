@@ -1,0 +1,39 @@
+{
+  "passed": true,
+  "mode": "embedded-source-with-real-HTTP-bridge",
+  "checks": [
+    "40 legal initial edges",
+    "25 dots",
+    "server-created match",
+    "mouse moves",
+    "keyboard navigation",
+    "complete 40-edge game",
+    "captures total 16",
+    "hash and replay audit",
+    "candidate inspector",
+    "event inspector",
+    "replay scrubber",
+    "world leaderboard",
+    "channel authorization",
+    "rules dialog",
+    "390px layout",
+    "320px layout",
+    "no uncaught page errors"
+  ],
+  "pageErrors": [],
+  "viewports": [
+    {
+      "width": 390,
+      "height": 844,
+      "overflow": false
+    },
+    {
+      "width": 320,
+      "height": 740,
+      "overflow": false
+    }
+  ],
+  "limitations": [
+    "Embedded mode does not validate navigation, CSP enforcement, browser cookie attributes, OAuth redirects or download behavior."
+  ]
+}

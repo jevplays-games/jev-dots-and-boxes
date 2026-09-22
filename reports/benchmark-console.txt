@@ -1,0 +1,54 @@
+{
+  "schema": "dots-benchmark-v1",
+  "createdAt": "2026-09-22T05:21:29.157Z",
+  "pairs": 6,
+  "games": 12,
+  "mode": "local",
+  "opponent": "random",
+  "difficulty": "normal",
+  "size": 4,
+  "seed": 20260922,
+  "poolId": "3f5f1380624569f0b61e954b6c260644aa96cc065bd32bde81fbf6783e1f6e2d",
+  "profile": {
+    "sourceRevision": "unversioned-local",
+    "rules": "dots-boxes-v1",
+    "analysis": "analysis-v1",
+    "prompt": "choice-v1",
+    "model": "jev-1.13.0",
+    "difficulty": "normal",
+    "search": {
+      "depth": 2,
+      "nodes": 2000,
+      "exactThreshold": 0
+    },
+    "instructions": "Choose the legal edge that maximizes the acting player's final box count. Use the supplied computed facts. Completing one or two boxes retains the move; taking an available box is optional. The search estimate is final JEV minus human boxes; a negative value favors the human. Search estimates are not proofs unless exact is true. Chain handouts may preserve control, but are not always correct. Select only a supplied option."
+  },
+  "jevSeatBalancedScoreRate": 1,
+  "jevMeanBoxMargin": 16,
+  "pairBootstrap95": {
+    "scoreRate": [
+      1,
+      1
+    ],
+    "boxMargin": [
+      16,
+      16
+    ]
+  },
+  "latencyMeanAcrossGamesMs": {
+    "n": 12,
+    "min": 5.911183321428699,
+    "max": 8.22096007407407,
+    "mean": 6.778157626102313,
+    "p50": 6.645323960978857,
+    "p95": 7.986141226190504,
+    "p99": 8.173996304497356
+  },
+  "providerAttempts": 0,
+  "warnings": [
+    "This measures a local search/heuristic system, NOT live JEV quality.",
+    "Intervals resample the observed seed pairs only; this small smoke cohort is not a broad strength estimate.",
+    "Timing is specific to this machine and run.",
+    "No hidden live calls are made when both modes are local."
+  ]
+}

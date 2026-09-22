@@ -1,0 +1,8 @@
+.env
+.dev.vars
+.data/
+node_modules/
+.wrangler/
+bench/output/
+test-results/
+__pycache__/
