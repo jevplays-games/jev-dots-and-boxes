@@ -117,7 +117,7 @@ function buildBoard(){
 function recordRows(target,rows){target.replaceChildren(...rows.map(([name,value])=>{const row=document.createElement('div');row.className='record-row';const key=document.createElement('span'),v=document.createElement('strong');key.textContent=name;v.textContent=String(value);row.append(key,v);return row;}));}
 function render(){
   if(!match)return;const start=performance.now(),s=match.state,score=getScore(s),summary=online&&match.summary?match.summary:summarize(match);
-  $('human-score').textContent=score.human;$('jev-score').textContent=score.jev;
+  $('human-score').textContent=score.human;$('jev-score').textContent=score.jev;$('human-score-large').textContent=score.human;$('jev-score-large').textContent=score.jev;
   const running=match.status==='active';$('human-card').classList.toggle('is-turn',running&&s.toMove===0);$('jev-card').classList.toggle('is-turn',running&&s.toMove===1);
   $('human-turn').hidden=!running||s.toMove!==0;$('jev-turn').hidden=!running||s.toMove!==1;$('opponent-name').textContent=match.mode==='jev'?'JEV':'LOCAL';
   $('remaining').textContent=`${s.edges.length-s.ply} EDGES LEFT`;
