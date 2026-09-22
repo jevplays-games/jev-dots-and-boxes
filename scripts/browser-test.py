@@ -31,7 +31,7 @@ with sync_playwright() as p:
             return {'text':response.read().decode(),'status':response.code,'headers':dict(response.headers)}
         page.expose_binding('__httpBridge',bridge)
         html=(ROOT/'public/index.html').read_text();html=re.sub(r'<script[^>]*>.*?</script>','',html,flags=re.S);html=re.sub(r'<link[^>]+>','',html)
-        page.set_content(html);page.add_style_tag(content=(ROOT/'public/game.css').read_text())
+        page.set_content(html);page.add_style_tag(content=(ROOT/'public/brand/brand.css').read_text());page.add_style_tag(content=(ROOT/'public/game.css').read_text())
         workers='\n'.join(flatten(f) for f in ['games/dots-and-boxes/rules.js','games/dots-and-boxes/analysis.js','analysis-worker.js'])
         setup='''if(!crypto.randomUUID)crypto.randomUUID=()=>[...crypto.getRandomValues(new Uint8Array(16))].map((v,i)=>([4,6,8,10].includes(i)?'-':'')+v.toString(16).padStart(2,'0')).join('');
         window.fetch=async (url,init={})=>{const r=await window.__httpBridge({url:String(url),...init});return new Response(r.text,{status:r.status,headers:r.headers});};
