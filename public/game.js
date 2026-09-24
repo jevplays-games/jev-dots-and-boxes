@@ -80,6 +80,21 @@ async function action(edgeId){
   catch(e){toast(e.message);telemetry('network_error');if(online){try{await refresh();}catch{}}}
   finally{busy=false;render();}
 }
+/* Auto-start: the board is playable as soon as the page is, with no click.
+   Until now init() left a PREVIEW match on screen -- a board you could look at
+   but not play -- and waited for New game. This converts that preview into a
+   real match. It returns early unless the board is still that preview, so a
+   resumed server match and a restored offline match are both left alone and a
+   reload rejoins rather than opening a second match.
+   Ranked is taken only when the checkbox is enabled, the same gate the player
+   faces by hand (online, signed in, ranked capability, not local mode). $('mode')
+   is already pinned to 'local' when the server reports no JEV, so an
+   auto-started game is never relabeled as JEV. */
+async function autoStart(){
+  if(busy||!match?.preview)return;
+  $('ranked').checked=!$('ranked').disabled;
+  await startNew();
+}
 async function startNew(){
   busy=true;$('new-dialog').close();render();
   try{
@@ -241,6 +256,7 @@ async function init(){
     match=restored??blankMatch(true);render();toast('Application API unavailable. Local browser practice is active; no ranked scores will be submitted.');
   }
   if(match.mode)$('mode').value=match.mode;if(match.difficulty)$('difficulty').value=match.difficulty;render();
+  await autoStart();
   if(!match.preview&&match.status==='active'&&match.state.toMove===1){busy=true;render();try{await advance();}catch(e){toast(e.message);}finally{busy=false;render();}}
 }
 void init();
