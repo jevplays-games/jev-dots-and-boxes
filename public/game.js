@@ -12,8 +12,9 @@ $('difficulty').value=['easy','normal','hard','jev'].includes(preferences.diffic
 $('telemetry-consent').checked=preferences.telemetry===true;
 function savePreferences(){try{localStorage.setItem('dots-preferences',JSON.stringify({difficulty:$('difficulty').value,telemetry:$('telemetry-consent').checked}));}catch{}}
 function toast(message){$('toast').textContent=message;$('toast').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>{$('toast').hidden=true;},6000);}
+let bearer=null; // set only inside a Discord Activity, where cookies are not sent
 async function api(path,method='GET',data){
-  const response=await fetch(path,{method,credentials:'same-origin',headers:{...(data?{'Content-Type':'application/json','X-CSRF-Token':session?.csrf??''}:{})},...(data?{body:JSON.stringify(data)}:{})});
+  const response=await fetch(path,{method,credentials:'same-origin',headers:{...(bearer?{Authorization:`Bearer ${bearer}`}:{}),...(data?{'Content-Type':'application/json','X-CSRF-Token':session?.csrf??''}:{})},...(data?{body:JSON.stringify(data)}:{})});
   const value=await response.json();if(!response.ok){const e=Error(value.message??value.error??'Request failed');e.status=response.status;e.code=value.error;throw e;}return value;
 }
 function telemetry(type,durationMs){
@@ -209,7 +210,7 @@ function download(text,type,name){const a=document.createElement('a'),url=URL.cr
 async function exportData(format){
   if(match.preview){toast('Start a match before exporting.');return;}
   try{let text,type='application/json',extension='json';
-    if(online){const r=await fetch(`/api/matches/${match.id}/export?format=${format}`,{credentials:'same-origin'});if(!r.ok)throw Error('Export failed.');text=await r.text();type=r.headers.get('content-type');}
+    if(online){const r=await fetch(`/api/matches/${match.id}/export?format=${format}`,{credentials:'same-origin',...(bearer?{headers:{Authorization:`Bearer ${bearer}`}}:{})});if(!r.ok)throw Error('Export failed.');text=await r.text();type=r.headers.get('content-type');}
     else if(format==='json')text=JSON.stringify(match,null,2);else if(format==='summary')text=JSON.stringify(summarize(match),null,2);else if(format==='replay')text=JSON.stringify(replayData(),null,2);else if(format==='jsonl')text=match.events.map(e=>JSON.stringify(e)).join('\n')+'\n';else text=csv(exportTables(match)[format]);
     if(format==='jsonl'){extension='jsonl';type='application/x-ndjson';}else if(['moves','decisions','candidates','attempts'].includes(format)){extension='csv';type='text/csv';}
     download(text,type,`dots-${match.id}-${format}.${extension}`);telemetry('export_clicked');
@@ -244,6 +245,10 @@ $('login').addEventListener('click',async()=>{
 });
 document.addEventListener('visibilitychange',()=>{telemetry('visibility_changed');if(document.visibilityState==='visible'&&online&&!busy)void refresh().catch(()=>{});});
 async function init(){
+  if(new URLSearchParams(location.search).has('frame_id')){
+    try{bearer=(await (await import('/activity.js')).signInWithDiscord(api)).token;}
+    catch(e){toast(`Could not sign in through Discord. ${e.message}`);}
+  }
   try{
     session=await api('/api/session');$('login').textContent=session.user?`${session.user.display_name} · sign out`:'Sign in with Discord';
     $('mode').value=session.capabilities.jev?'jev':'local';$('mode').querySelector('[value="jev"]').disabled=!session.capabilities.jev;

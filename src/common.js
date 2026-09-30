@@ -31,9 +31,12 @@ export async function operation(env,type,data){
   // Only explicit caller-provided fields: no raw URLs, headers, request bodies or tokens.
   await run(env,'INSERT INTO operational_events(id,utc,type,data_json) VALUES(?,?,?,?)',crypto.randomUUID(),new Date().toISOString(),type,JSON.stringify(data));
 }
-export function responseSecurity(response){
+// Discord shows an Activity inside its own iframe. Only a page loaded with Discord's frame_id may be framed, and only by Discord.
+export const ACTIVITY_FRAME_ANCESTORS='frame-ancestors https://discord.com https://ptb.discord.com https://canary.discord.com';
+export function responseSecurity(response,url=null){
   const h=new Headers(response.headers);h.set('X-Content-Type-Options','nosniff');h.set('Referrer-Policy','no-referrer');h.set('X-Frame-Options','DENY');
   h.set('Content-Security-Policy',"default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'");
+  if(url&&!url.pathname.startsWith('/api/')&&url.searchParams.has('frame_id')){h.delete('X-Frame-Options');h.set('Content-Security-Policy',h.get('Content-Security-Policy').replace("frame-ancestors 'none'",ACTIVITY_FRAME_ANCESTORS));}
   h.set('Permissions-Policy','camera=(), microphone=(), geolocation=()');
   return new Response(response.body,{status:response.status,headers:h});
 }
