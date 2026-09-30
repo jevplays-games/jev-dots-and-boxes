@@ -125,7 +125,7 @@ Keep normal web-server/CDN access logs from retaining OAuth codes and launch que
 
 ## GoDaddy Node.js hosting
 
-The same Worker handler also runs as a plain Node.js app (`scripts/dev.mjs`) when `NODE_ENV=production`. GoDaddy runs `npm run build` (a no-op) then `npm start`, which loads `.env` from the zip root (real process variables win).
+The same Worker handler also runs as a plain Node.js app (`scripts/dev.mjs`) when `NODE_ENV=production` **or** `APP_ORIGIN` is an `https://` origin on a non-loopback host (GoDaddy's platform environment can override `NODE_ENV`). Loopback or `http://` origins stay local development. GoDaddy runs `npm run build` (a no-op) then `npm start`, which loads `.env` from the zip root (real process variables win).
 
 - Zip root holds `package.json`, `.env`, `src/`, `public/`, `scripts/`, `migrations/`. No `npm install` is needed (zero runtime dependencies).
 - Production mode binds `HOST` (default `0.0.0.0`) on the platform-injected `PORT`, leaves `DEV_MODE` off so ranked play, Discord OAuth/Activity and signed interactions behave as on Workers, and refuses to start without `APP_ORIGIN` (exact `https://` origin), `TYPESAFE_API_KEY`, `DISCORD_CLIENT_ID`, `DISCORD_CLIENT_SECRET` and `DISCORD_PUBLIC_KEY`.
