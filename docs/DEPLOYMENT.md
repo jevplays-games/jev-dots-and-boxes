@@ -122,3 +122,13 @@ Verify HTTPS, exact-origin settings, all static assets and module workers, no br
 Inspect actual D1 row sizes and query costs. A full-evidence match can be hundreds of kilobytes; versioned 40-move games bound normal growth but do not make storage free. The included SQL provides storage and provider-failure queries.
 
 Keep normal web-server/CDN access logs from retaining OAuth codes and launch query parameters. Application logs already exclude these values; platform-level access logging is a separate configuration responsibility.
+
+## GoDaddy Node.js hosting
+
+The same Worker handler also runs as a plain Node.js app (`scripts/dev.mjs`) when `NODE_ENV=production`. GoDaddy runs `npm run build` (a no-op) then `npm start`, which loads `.env` from the zip root (real process variables win).
+
+- Zip root holds `package.json`, `.env`, `src/`, `public/`, `scripts/`, `migrations/`. No `npm install` is needed (zero runtime dependencies).
+- Production mode binds `HOST` (default `0.0.0.0`) on the platform-injected `PORT`, leaves `DEV_MODE` off so ranked play, Discord OAuth/Activity and signed interactions behave as on Workers, and refuses to start without `APP_ORIGIN` (exact `https://` origin), `TYPESAFE_API_KEY`, `DISCORD_CLIENT_ID`, `DISCORD_CLIENT_SECRET` and `DISCORD_PUBLIC_KEY`.
+- The request URL is built from `APP_ORIGIN`, not the Host header, so origin/CSRF checks are unchanged behind the TLS-terminating proxy.
+- SQLite lives at `DB_PATH` (default `.data/game.sqlite`, outside `public/` and never served). The filesystem is ephemeral: a redeploy loses matches, sessions and rankings.
+- The Cloudflare cron is replaced by an in-process hourly timer (also run once at startup) calling the same `scheduled` cleanup.
