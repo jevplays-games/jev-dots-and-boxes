@@ -1,5 +1,6 @@
 import {sessionResponse,getSession,requireMutation,oauthStart,oauthCallback,logout,attachContext} from './auth.js';
 import {interaction} from './discord.js';
+import {activityConfig,createActivitySession} from './activity.js';
 import {createMatch,stepMatch,loadMatch,snapshot,matchExport,expireMatches} from './matches.js';
 import {leaderboard,personalHistory} from './leaderboard.js';
 import {json,body,fail,responseSecurity,operation,run,all,quota} from './common.js';
@@ -12,6 +13,8 @@ async function routes(request,env){
   if(path==='/api/health'&&request.method==='GET')return json({ok:true,game:'dots-and-boxes',version:'1.0.0'});
   if(path==='/api/discord/interactions'&&request.method==='POST')return interaction(request,env);
   if(path==='/api/session'&&request.method==='GET')return sessionResponse(request,env);
+  if(path==='/api/activity/config'&&request.method==='GET')return activityConfig(env);
+  if(path==='/api/activity/session'&&request.method==='POST')return createActivitySession(request,env);
   if(path==='/api/auth/discord'&&request.method==='GET')return oauthStart(request,env);
   if(path==='/api/auth/discord/callback'&&request.method==='GET')return oauthCallback(request,env);
   const mutating=['POST','PUT','PATCH','DELETE'].includes(request.method),s=mutating?await requireMutation(request,env):await getSession(request,env);
@@ -60,11 +63,11 @@ export default {
     if(new URL(request.url).pathname.startsWith('/api/')&&env.DB){
       // No query strings, IPs, names, cookies, request text or provider keys.
       const rawPath=new URL(request.url).pathname;
-      const known=new Set(['/api/health','/api/session','/api/auth/discord','/api/auth/discord/callback','/api/discord/interactions','/api/leaderboard','/api/logout','/api/session/context','/api/matches','/api/history','/api/analytics']);
+      const known=new Set(['/api/health','/api/session','/api/auth/discord','/api/auth/discord/callback','/api/activity/config','/api/activity/session','/api/discord/interactions','/api/leaderboard','/api/logout','/api/session/context','/api/matches','/api/history','/api/analytics']);
       const route=known.has(rawPath)?rawPath:/^\/api\/matches\/[a-f0-9-]{36}(?:\/(step|events|export|telemetry))?$/.test(rawPath)?rawPath.replace(/[a-f0-9-]{36}/,':match'):'/api/unknown';
       ctx.waitUntil(operation(env,'http_request',{route,method:request.method,status:response.status,latencyMs:performance.now()-started,errorCode}).catch(()=>{}));
     }
-    return responseSecurity(response);
+    return responseSecurity(response,new URL(request.url));
   },
   async scheduled(controller,env,ctx){
     await expireMatches(env);
