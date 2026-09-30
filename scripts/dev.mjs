@@ -6,7 +6,9 @@ import {SQLiteD1} from './sqlite-adapter.mjs';
 import worker from '../src/worker.js';
 const root=resolve(fileURLToPath(new URL('..',import.meta.url))),assets=resolve(root,'public');
 try{process.loadEnvFile(resolve(root,'.env'));}catch(error){if(error.code!=='ENOENT')throw error;}
-const production=process.env.NODE_ENV==='production',port=Number(process.env.PORT??8787),host=production?(process.env.HOST||'0.0.0.0'):'127.0.0.1',origin=process.env.APP_ORIGIN??`http://127.0.0.1:${port}`;
+const port=Number(process.env.PORT??8787),origin=process.env.APP_ORIGIN??`http://127.0.0.1:${port}`;
+// Production when NODE_ENV=production OR the origin is https on a non-loopback host (some hosts override NODE_ENV).
+const production=process.env.NODE_ENV==='production'||(/^https:\/\//.test(origin)&&!/^https:\/\/(localhost|127\.0\.0\.1|\[::1\])(:\d+)?(\/|$)/.test(origin)),host=production?(process.env.HOST||'0.0.0.0'):'127.0.0.1';
 if(production){
   // Plain Node hosting (e.g. GoDaddy): TLS terminates at the platform proxy; the public origin is configured, never taken from the Host header.
   if(!/^https:\/\/[^/]+$/.test(origin))throw Error('Production requires APP_ORIGIN set to the exact public HTTPS origin.');
