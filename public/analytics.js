@@ -1,7 +1,7 @@
 /** Shared analytics: summaries, lossless export, replay audit and safe CSV. */
 import {createInitialState,applyAction,serialize,getScore,getOutcome} from './games/dots-and-boxes/rules.js';
 export const EVENT_SCHEMA='dots-analytics-v1';
-const CLOCK_DOMAIN=crypto.randomUUID();
+let CLOCK_DOMAIN; // created on first use: Workers forbid random values in module scope
 export function canonical(value) {
   if(value===null||typeof value!=='object')return JSON.stringify(value);
   if(Array.isArray(value))return '['+value.map(canonical).join(',')+']';
@@ -14,7 +14,7 @@ export async function sha256(value) {
 export async function appendEvent(match,type,data={},requestId=null,now=Date.now()) {
   const last=match.events.at(-1);
   const e={schema:EVENT_SCHEMA,matchId:match.id,sequence:match.events.length+1,utc:new Date(now).toISOString(),elapsedMs:Math.max(0,now-match.createdAt),
-    type,requestId,clock:{domainId:CLOCK_DOMAIN,monotonicMs:performance.now()},previousHash:last?.hash??'0'.repeat(64),data};
+    type,requestId,clock:{domainId:(CLOCK_DOMAIN??=crypto.randomUUID()),monotonicMs:performance.now()},previousHash:last?.hash??'0'.repeat(64),data};
   e.hash=await sha256(e);match.events.push(e);return e;
 }
 export function statistics(values) {
