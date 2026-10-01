@@ -49,7 +49,7 @@ function rollout(s) {
   const last=getScore(t);return (last.jev-last.human)-(initial.jev-initial.human);
 }
 function searchKey(s,depth) { return `${s.toMove}:${depth}:${s.edges.map(e=>e===null?'0':'1').join('')}`; }
-function evaluate(s,depth,ctx) {
+export function evaluateReference(s,depth,ctx) {
   if(s.toMove===null) return {value:0,exact:true,complete:true};
   const key=searchKey(s,depth); if(ctx.memo.has(key)){ctx.cacheHits++;return ctx.memo.get(key);}
   if(depth===0||ctx.nodes>=ctx.limit) { ctx.cutoffs++; return {value:rollout(s),exact:false,complete:depth===0}; }
@@ -58,11 +58,72 @@ function evaluate(s,depth,ctx) {
   const ordered=getLegalActions(s).sort((a,b)=>immediate(s,b.edgeId,counts).capturesNow-immediate(s,a.edgeId,counts).capturesNow||a.edgeId-b.edgeId);
   for(const action of ordered) {
     const next=applyAction(s,action), reward=next.event.capturedBoxes.length*(s.toMove===1?1:-1);
-    const child=evaluate(next.state,depth-1,ctx), v=reward+child.value;
+    const child=evaluateReference(next.state,depth-1,ctx), v=reward+child.value;
     value=s.toMove===1?Math.max(value,v):Math.min(value,v); exact&&=child.exact; complete&&=child.complete;
   }
   const answer={value,exact,complete}; if(complete)ctx.memo.set(key,answer); return answer;
 }
+/* Fast search: the same algorithm as evaluateReference (same move order, node budget, memo semantics, cutoffs and
+   results) on one mutable board with undo, typed arrays and a numeric memo key, instead of cloning the state and
+   building string keys at every node. evaluateReference stays as the readable specification; tests/search-equivalence
+   asserts both agree on value, exactness, node/cache/cutoff counters. Boards with more than 48 edges use the reference. */
+const fastTables=new Map();
+function fastTable(size) {
+  if(fastTables.has(size)) return fastTables.get(size);
+  const g=geometry(size),E=g.edgeCount,B=g.boxCount;
+  const edgeBoxes=g.edges.map(e=>Int32Array.from(e.boxes)),pow2=new Float64Array(E);
+  for(let i=0;i<E;i++) pow2[i]=2**i;
+  const table={E,B,edgeBoxes,pow2}; fastTables.set(size,table); return table;
+}
+function evaluateFast(s,depth,ctx) {
+  const {E,B,edgeBoxes,pow2}=fastTable(s.size), drawn=new Uint8Array(E), cnt=new Uint8Array(B);
+  let mask=0, ply=0;
+  const g=geometry(s.size);
+  for(let e=0;e<E;e++) if(s.edges[e]!==null){drawn[e]=1;mask+=pow2[e];ply++;for(const b of g.edges[e].boxes)cnt[b]++;}
+  const levelOrder=[],levelCaps=[];
+  const draw=e=>{drawn[e]=1;mask+=pow2[e];ply++;const bs=edgeBoxes[e];for(let i=0;i<bs.length;i++)cnt[bs[i]]++;};
+  const undraw=e=>{drawn[e]=0;mask-=pow2[e];ply--;const bs=edgeBoxes[e];for(let i=0;i<bs.length;i++)cnt[bs[i]]--;};
+  const capturesNow=e=>{const bs=edgeBoxes[e];let n=0;for(let i=0;i<bs.length;i++)if(cnt[bs[i]]===3)n++;return n;};
+  // Follows captures only (highest capture count, then lowest edge id), then restores the board.
+  function rollout(toMove) {
+    let gained=0,t=toMove;const taken=[];
+    while(t!==null){
+      let best=-1,bestC=0;
+      for(let e=0;e<E;e++){if(drawn[e])continue;const c=capturesNow(e);if(c>bestC){bestC=c;best=e;}}
+      if(bestC===0)break;
+      gained+=bestC*(t===1?1:-1);draw(best);taken.push(best);
+      if(ply===E)t=null;
+    }
+    for(let i=taken.length-1;i>=0;i--)undraw(taken[i]);
+    return gained;
+  }
+  function search(toMove,depth,level) {
+    if(toMove===null) return {value:0,exact:true,complete:true};
+    const key=mask*32+toMove*16+depth;
+    const hit=ctx.memo.get(key); if(hit!==undefined){ctx.cacheHits++;return hit;}
+    if(depth===0||ctx.nodes>=ctx.limit){ctx.cutoffs++;return {value:rollout(toMove),exact:false,complete:depth===0};}
+    ctx.nodes++;
+    let value=toMove===1?-Infinity:Infinity,exact=true,complete=true;
+    // Order: captures first (more captured boxes first), then ascending edge id: same as the reference's stable sort.
+    let order=levelOrder[level],caps=levelCaps[level];
+    if(order===undefined){order=levelOrder[level]=new Int32Array(E);caps=levelCaps[level]=new Int8Array(E);}
+    let n=0;const byCaps=[[],[],[]];
+    for(let e=0;e<E;e++){if(drawn[e])continue;const c=capturesNow(e);caps[e]=c;byCaps[c].push(e);}
+    for(let c=2;c>=0;c--)for(const e of byCaps[c])order[n++]=e;
+    const sign=toMove===1?1:-1;
+    for(let i=0;i<n;i++){
+      const e=order[i],c=caps[e];
+      draw(e);
+      const next=ply===E?null:c>0?toMove:1-toMove;
+      const child=search(next,depth-1,level+1),v=c*sign+child.value;
+      undraw(e);
+      value=toMove===1?Math.max(value,v):Math.min(value,v);exact&&=child.exact;complete&&=child.complete;
+    }
+    const answer={value,exact,complete};if(complete)ctx.memo.set(key,answer);return answer;
+  }
+  return search(s.toMove,depth,0);
+}
+export function evaluate(s,depth,ctx) { return geometry(s.size).edgeCount<=48?evaluateFast(s,depth,ctx):evaluateReference(s,depth,ctx); }
 export function analyzeCandidates(s,difficulty='normal',overrides={}) {
   if(!PROFILES[difficulty]) throw new Error('Unknown difficulty.');
   const profile={...PROFILES[difficulty],...overrides}, before=sideCounts(s), legal=getLegalActions(s),score=getScore(s);
