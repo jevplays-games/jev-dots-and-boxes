@@ -15,7 +15,9 @@ function toast(message){$('toast').textContent=message;$('toast').hidden=false;c
 let bearer=null; // set only inside a Discord Activity, where cookies are not sent
 async function api(path,method='GET',data){
   const response=await fetch(path,{method,credentials:'same-origin',headers:{...(bearer?{Authorization:`Bearer ${bearer}`}:{}),...(data?{'Content-Type':'application/json','X-CSRF-Token':session?.csrf??''}:{})},...(data?{body:JSON.stringify(data)}:{})});
-  const value=await response.json();if(!response.ok){const e=Error(value.message??value.error??'Request failed');e.status=response.status;e.code=value.error;throw e;}return value;
+  const text=await response.text();let value=null;try{value=JSON.parse(text);}catch{}
+  if(value===null){const e=Error(response.status>=500?'The server could not finish that request in time. Please try again.':`Unexpected response from the server (HTTP ${response.status}).`);e.status=response.status;e.code='bad_response';throw e;}
+  if(!response.ok){const e=Error(value.message??value.error??'Request failed');e.status=response.status;e.code=value.error;throw e;}return value;
 }
 function telemetry(type,durationMs){
   if(!online||!match||match.preview||!$('telemetry-consent').checked)return;
@@ -74,10 +76,20 @@ async function advance(){
     }else await localOpponent();
   }
 }
+// JEV's move is computed on the server and can occasionally fail transiently; retry a couple of times before giving up.
+async function advanceWithRetry(){
+  for(let attempt=0;;attempt++){
+    try{await advance();return;}
+    catch(e){
+      if(attempt>=2||!(e.status>=500||e.code==='bad_response'))throw e;
+      toast('JEV is taking a moment — retrying…');await new Promise(resolve=>setTimeout(resolve,1500));
+    }
+  }
+}
 async function action(edgeId){
   if(busy||match?.state.toMove!==0||match?.status!=='active')return;
   busy=true;render();
-  try{if(match.preview)await create();if(online)await acceptSnapshot(await api(`/api/matches/${match.id}/step`,'POST',{operation:'human_move',edgeId,requestId:crypto.randomUUID(),expectedRevision:match.revision}));else await localCommit(edgeId,'human');await advance();}
+  try{if(match.preview)await create();if(online)await acceptSnapshot(await api(`/api/matches/${match.id}/step`,'POST',{operation:'human_move',edgeId,requestId:crypto.randomUUID(),expectedRevision:match.revision}));else await localCommit(edgeId,'human');await advanceWithRetry();}
   catch(e){toast(e.message);telemetry('network_error');if(online){try{await refresh();}catch{}}}
   finally{busy=false;render();}
 }
@@ -253,7 +265,10 @@ async function init(){
     session=await api('/api/session');$('login').textContent=session.user?`${session.user.display_name} · sign out`:'Sign in with Discord';
     $('mode').value=session.capabilities.jev?'jev':'local';$('mode').querySelector('[value="jev"]').disabled=!session.capabilities.jev;
     if(launch&&session.user){try{await api('/api/session/context','POST',{launch});session=await api('/api/session');launch=null;toast('Discord community context verified. Enable Ranked before starting an official match.');}catch(e){toast(e.message);}}
-    if(session.activeMatchId)await acceptSnapshot(await api(`/api/matches/${session.activeMatchId}`));
+    if(session.activeMatchId){
+      await acceptSnapshot(await api(`/api/matches/${session.activeMatchId}`));
+      if(match?.status==='active'&&match.state.toMove===1){busy=true;render();advanceWithRetry().catch(e=>toast(e.message)).finally(()=>{busy=false;render();});}
+    }
     else{match=blankMatch(true);match.mode=$('mode').value;match.profile.model=session.capabilities.model;render();}
   }catch{
     online=false;$('mode').value='local';$('mode').querySelector('[value="jev"]').disabled=true;session={capabilities:{}};
