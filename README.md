@@ -1,3 +1,5 @@
+<p align="center"><img src="assets/banner.jpg" alt="Pixel-art robot Jev drawing lines between glowing dots on a Dots and Boxes grid with cyan and magenta boxes in a neon arcade" width="100%"></p>
+
 # Dots & Boxes · JEV Arcade
 
 A playable, single-page Dots and Boxes game with a server-side JEV opponent, Discord identity and community leaderboards, deterministic replays, and detailed, exportable analytics.
