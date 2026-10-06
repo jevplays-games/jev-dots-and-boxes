@@ -119,25 +119,48 @@ async function startNew(){
   }catch(e){toast(e.message);if(online)try{await refresh();}catch{}}
   finally{busy=false;render();}
 }
-function buildBoard(){
-  const active=document.activeElement?.classList.contains('edge')?Number(document.activeElement.dataset.id):null,s=match.state,g=geometry(s.size),fragment=document.createDocumentFragment();
-  for(let r=0;r<=s.size;r++)for(let c=0;c<=s.size;c++){const d=document.createElement('span');d.className=`dot r${r*2} c${c*2}`;d.setAttribute('aria-hidden','true');fragment.append(d);}
-  for(const box of g.boxes){const d=document.createElement('div'),v=s.boxes[box.id];d.className=`box-cell r${box.row*2+1} c${box.col*2+1}${v===null?'':v===0?' owned-human':' owned-jev'}`;d.textContent=v===null?'':v===0?'Y':'J';d.setAttribute('aria-label',`Box ${String.fromCharCode(65+box.col)}${box.row+1}: ${v===null?'unclaimed':v===0?'you':'opponent'}`);fragment.append(d);}
-  const legal=getLegalActions(s),enabled=!busy&&s.toMove===0&&match.status==='active';
-  const focusId=legal.some(a=>a.edgeId===active)?active:legal[0]?.edgeId;
+/* The board is built once per match and then updated in place, so a freshly
+   drawn rail or claimed box animates exactly once (a rebuild would restart it). */
+let boardEls=null,prevBoard=null,legalIds=[];
+function createBoardEls(s,g){
+  const dots=[],boxes=[],edges=[],fragment=document.createDocumentFragment();
+  for(let r=0;r<=s.size;r++)for(let c=0;c<=s.size;c++){const d=document.createElement('span');d.className=`dot r${r*2} c${c*2}`;d.setAttribute('aria-hidden','true');dots.push(d);fragment.append(d);}
+  for(const box of g.boxes){const d=document.createElement('div');d.className=`box-cell r${box.row*2+1} c${box.col*2+1}`;boxes.push(d);fragment.append(d);}
   for(const edge of g.edges){
-    const b=document.createElement('button'),v=s.edges[edge.id],r=edge.row*2+(edge.orientation==='v'?1:0),c=edge.col*2+(edge.orientation==='h'?1:0);
-    b.className=`edge ${edge.orientation} r${r} c${c} ${v===null?'available':v===0?'owned-human':'owned-jev'}`;b.dataset.id=edge.id;
-    const captures=edge.boxes.filter(id=>s.boxes[id]===null&&g.boxes[id].edges.filter(e=>s.edges[e]!==null).length===3).length;
-    b.setAttribute('aria-label',`${edge.orientation==='h'?'Horizontal':'Vertical'} edge ${edgeLabel(s.size,edge.id)}, ${v===null?`available${captures?`, captures ${captures} ${captures===1?'box':'boxes'}`:''}`:v===0?'drawn by you':'drawn by opponent'}`);
-    b.disabled=v!==null||!enabled;b.tabIndex=edge.id===focusId&&enabled?0:-1;b.addEventListener('click',()=>action(edge.id));
+    const b=document.createElement('button'),r=edge.row*2+(edge.orientation==='v'?1:0),c=edge.col*2+(edge.orientation==='h'?1:0);
+    b.type='button';b.dataset.id=edge.id;b.dataset.base=`edge ${edge.orientation} r${r} c${c}`;b.addEventListener('click',()=>action(edge.id));
     b.addEventListener('keydown',event=>{
       const keys=['ArrowRight','ArrowDown','ArrowLeft','ArrowUp','Home','End'];if(!keys.includes(event.key))return;event.preventDefault();
-      const ids=legal.map(a=>a.edgeId),idx=ids.indexOf(edge.id),next=event.key==='Home'?ids[0]:event.key==='End'?ids.at(-1):ids[(idx+(event.key==='ArrowRight'||event.key==='ArrowDown'?1:-1)+ids.length)%ids.length];
+      const ids=legalIds,idx=ids.indexOf(edge.id),next=event.key==='Home'?ids[0]:event.key==='End'?ids.at(-1):ids[(idx+(event.key==='ArrowRight'||event.key==='ArrowDown'?1:-1)+ids.length)%ids.length];
       const target=$('board').querySelector(`[data-id="${next}"]`);b.tabIndex=-1;if(target){target.tabIndex=0;target.focus();}
-    });fragment.append(b);
+    });
+    edges.push(b);fragment.append(b);
   }
   $('board').replaceChildren(fragment);
+  return {matchId:match.id,size:s.size,dots,boxes,edges};
+}
+function buildBoard(){
+  const active=document.activeElement?.classList.contains('edge')?Number(document.activeElement.dataset.id):null,s=match.state,g=geometry(s.size);
+  if(!boardEls||boardEls.matchId!==match.id||boardEls.size!==s.size||$('board').childElementCount!==boardEls.dots.length+boardEls.boxes.length+boardEls.edges.length){boardEls=createBoardEls(s,g);prevBoard=null;}
+  const legal=getLegalActions(s),enabled=!busy&&s.toMove===0&&match.status==='active';legalIds=legal.map(a=>a.edgeId);
+  const focusId=legal.some(a=>a.edgeId===active)?active:legal[0]?.edgeId;
+  const changed=!prevBoard||s.edges.some((v,i)=>v!==prevBoard.edges[i])||s.boxes.some((v,i)=>v!==prevBoard.boxes[i]);
+  for(const box of g.boxes){
+    const d=boardEls.boxes[box.id],v=s.boxes[box.id];
+    d.classList.toggle('owned-human',v===0);d.classList.toggle('owned-jev',v===1);
+    if(changed)d.classList.toggle('fresh',prevBoard!==null&&v!==null&&prevBoard.boxes[box.id]===null);
+    d.textContent=v===null?'':v===0?'Y':'J';
+    d.setAttribute('aria-label',`Box ${String.fromCharCode(65+box.col)}${box.row+1}: ${v===null?'unclaimed':v===0?'you':'opponent'}`);
+  }
+  for(const edge of g.edges){
+    const b=boardEls.edges[edge.id],v=s.edges[edge.id];
+    const fresh=changed?(prevBoard!==null&&v!==null&&prevBoard.edges[edge.id]===null):b.classList.contains('fresh');
+    b.className=`${b.dataset.base} ${v===null?'available':v===0?'owned-human':'owned-jev'}${fresh?' fresh':''}`;
+    const captures=edge.boxes.filter(id=>s.boxes[id]===null&&g.boxes[id].edges.filter(e=>s.edges[e]!==null).length===3).length;
+    b.setAttribute('aria-label',`${edge.orientation==='h'?'Horizontal':'Vertical'} edge ${edgeLabel(s.size,edge.id)}, ${v===null?`available${captures?`, captures ${captures} ${captures===1?'box':'boxes'}`:''}`:v===0?'drawn by you':'drawn by opponent'}`);
+    b.disabled=v!==null||!enabled;b.tabIndex=edge.id===focusId&&enabled?0:-1;
+  }
+  if(changed)prevBoard={edges:[...s.edges],boxes:[...s.boxes]};
   if(active!==null&&enabled)$('board').querySelector(`[data-id="${focusId}"]`)?.focus({preventScroll:true});
   $('legal-edges').replaceChildren(...legal.map(a=>{const option=document.createElement('option');option.value=a.edgeId;option.textContent=edgeLabel(s.size,a.edgeId);return option;}));
   $('draw-selected').disabled=!enabled;$('legal-edges').disabled=!enabled;
@@ -152,7 +175,7 @@ function render(){
   let status=running?(busy?(s.toMove===1?'Evaluating the opponent’s move…':'Committing your move…'):'Your move. Draw a line between two dots.'):
     match.status==='forfeit'?'Match conceded.':match.outcome==='draw'?'A draw. Eight boxes each.':match.outcome==='win'?'You win. The board is complete.':'Opponent wins. The board is complete.';
   const lastMove=match.events.findLast(e=>e.type==='move_committed');if(running&&!busy&&lastMove?.data.player===0&&lastMove.data.capturedBoxes.length)status='You captured a box. Draw another line.';
-  $('status').textContent=status;$('pipeline').classList.toggle('busy',busy&&s.toMove===1);
+  $('status').textContent=status;{const row=$('status').parentElement,over=!running&&!match.preview&&match.status!=='forfeit'&&s.toMove===null,res=over?(match.outcome==='win'?'is-win':match.outcome==='draw'?'is-draw':'is-loss'):'';row.classList.toggle('jv-plaque',over);for(const k of ['is-win','is-draw','is-loss'])row.classList.toggle(k,k===res);}$('pipeline').classList.toggle('busy',busy&&s.toMove===1);
   $('eligibility').textContent=match.preview?'READY TO PLAY':match.ranked?(match.verified?'VERIFIED RANKED':'RANKED MATCH'):match.mode==='local'?'LOCAL PRACTICE':'UNRANKED JEV';
   $('notice').hidden=!match.notice;$('notice').textContent=match.notice??'';
   $('new-game').disabled=busy;$('ranked').disabled=!online||!session?.user||!session?.capabilities?.ranked||$('mode').value==='local';if($('ranked').disabled)$('ranked').checked=false;

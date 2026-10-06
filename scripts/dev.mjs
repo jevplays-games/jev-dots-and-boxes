@@ -16,7 +16,7 @@ if(production){
 }else if(!/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin))throw Error('The development server binds only to localhost. Set NODE_ENV=production for public hosting.');
 await mkdir(resolve(root,'.data'),{recursive:true});const DB=new SQLiteD1(process.env.DB_PATH??resolve(root,'.data/game.sqlite'));
 DB.exec(await readFile(resolve(root,'migrations/0001_initial.sql'),'utf8'));
-const mime={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.svg':'image/svg+xml','.woff2':'font/woff2','.txt':'text/plain; charset=utf-8','.json':'application/json'};
+const mime={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.svg':'image/svg+xml','.png':'image/png','.woff2':'font/woff2','.txt':'text/plain; charset=utf-8','.json':'application/json'};
 const env={...process.env,APP_ORIGIN:origin,DEV_MODE:production?'false':'true',DB,ASSETS:{async fetch(request){
   let pathname;try{pathname=decodeURIComponent(new URL(request.url).pathname);}catch{return new Response('Bad path',{status:400});}
   const path=resolve(assets,'.'+(pathname==='/'?'/index.html':pathname));
