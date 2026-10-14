@@ -38,7 +38,7 @@ with sync_playwright() as p:
         const NativeWorker=window.Worker;const workerBlob=new Blob([WORKER_CODE],{type:'text/javascript'});
         window.Worker=class extends NativeWorker{constructor(){super(URL.createObjectURL(workerBlob));}};
         '''.replace('WORKER_CODE',json.dumps(workers))
-        code='\n'.join(flatten(f) for f in ['games/box-score/rules.js','games/box-score/analysis.js','analytics.js','game.js'])
+        code='\n'.join(flatten(f) for f in ['brand/brand.js','games/box-score/rules.js','games/box-score/analysis.js','analytics.js','game.js'])
         page.add_script_tag(content=setup+code)
     else:page.goto(args.url)
     page.wait_for_selector('.edge',timeout=15000)
