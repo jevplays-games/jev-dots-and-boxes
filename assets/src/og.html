@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1200, initial-scale=1">
+<title>Box Score · jevplay.games</title>
+<style>
+@font-face{font-family:Inter;font-style:normal;font-weight:100 900;font-display:block;src:url('../../public/brand/inter-var.woff2') format('woff2')}
+@font-face{font-family:VT323;font-style:normal;font-weight:400;font-display:block;src:url('../../public/brand/vt323.woff2') format('woff2')}
+:root{--pink:#F386A1;--ink:#1E1E1E;--magenta:#E551BA;--panel:#DEDEDE;--paper:#FEFEFE}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1200px;height:630px;overflow:hidden;background:var(--pink)}
+body{position:relative;color:var(--ink);font-family:VT323,"JetBrains Mono",monospace}
+.frame{position:absolute;inset:30px 34px;border:1px solid var(--ink);overflow:hidden}
+.texture{position:absolute;inset:0;width:100%;height:100%}
+.mark{position:absolute;width:10px;height:10px;border:0 solid var(--ink)}
+.tl{left:12px;top:10px;border-left-width:1px;border-top-width:1px}.tr{right:12px;top:10px;border-right-width:1px;border-top-width:1px}.bl{left:12px;bottom:10px;border-left-width:1px;border-bottom-width:1px}.br{right:12px;bottom:10px;border-right-width:1px;border-bottom-width:1px}
+.tag{position:absolute;top:52px;left:64px;padding:3px 9px;background:var(--ink);color:var(--pink);font-size:20px;line-height:22px;letter-spacing:1px;border:1px dotted var(--pink);outline:1px solid var(--ink)}
+h1{position:absolute;left:64px;top:156px;font-family:Inter,sans-serif;font-weight:700;font-size:100px;line-height:1.1;letter-spacing:-.05em}
+.sub{position:absolute;left:68px;top:291px;background:var(--ink);color:var(--paper);padding:8px 12px;font-size:30px;line-height:34px;width:590px}
+.url{position:absolute;left:68px;top:402px;font-size:30px;line-height:34px}
+.chips{position:absolute;left:68px;top:474px;display:flex;gap:8px;font-size:24px;line-height:26px}.chips span{padding:2px 8px;background:var(--panel);border:1px solid var(--ink)}
+.win{position:absolute;border:1px solid var(--ink);background:var(--panel);box-shadow:inset 0 0 0 2px var(--paper),3px 3px 0 var(--ink)}
+.bar{display:flex;justify-content:space-between;padding:2px 7px;background:var(--ink);color:var(--paper);font-size:20px;line-height:21px}
+.emblem{left:740px;top:112px;width:370px;height:354px}
+.box{display:block;width:288px;height:288px;margin:18px auto 0}
+.jev{left:875px;top:435px;width:235px}
+.robotbody{display:flex;align-items:center;gap:14px;padding:12px 14px 13px}
+.robot{display:block;width:86px;height:66px;flex:none}
+/* Keep the reference SVG intact; use monochrome panels for this card. */
+.robot path[fill="#F386A1"]{fill:var(--paper)}
+.status{font-size:22px;line-height:22px}
+.brand{position:absolute;left:68px;bottom:48px;font-size:22px;line-height:24px}
+</style>
+</head>
+<body>
+<div class="mark tl"></div><div class="mark tr"></div><div class="mark bl"></div><div class="mark br"></div>
+<div class="frame" aria-hidden="true">
+<svg class="texture" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="dots" width="6" height="6" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r=".65" fill="#1E1E1E"/></pattern></defs><rect width="100%" height="100%" fill="url(#dots)" opacity=".4"/><g id="blobs" fill="#1E1E1E" opacity=".65"></g></svg>
+</div>
+<div class="tag">JEVPLAY.GAMES/BOX-SCORE</div>
+<h1>Box Score</h1>
+<p class="sub">Close squares. Claim boxes.<br>Beat Jev on the box score.</p>
+<p class="url">box-score.jevplay.games</p>
+<div class="chips"><span>+close</span><span>+claim</span><span>+score</span></div>
+<section class="win emblem" aria-label="Box Score game emblem">
+<div class="bar"><span>BOX_SCORE.TXT</span><span aria-hidden="true">_ x</span></div>
+<svg class="box" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A pink square enclosed by four ink edges and four paper dots, with one tiny magenta corner dot">
+<rect x="16" y="16" width="32" height="32" fill="#F386A1"/>
+<path d="M16 16H48V48H16Z" fill="none" stroke="#1E1E1E" stroke-width="4"/>
+<g fill="#FEFEFE" stroke="#1E1E1E" stroke-width="1.5"><circle cx="16" cy="16" r="5.5"/><circle cx="48" cy="16" r="5.5"/><circle cx="48" cy="48" r="5.5"/><circle cx="16" cy="48" r="5.5"/></g>
+<circle cx="48" cy="16" r="1.5" fill="#E551BA"/>
+</svg>
+</section>
+<section class="win jev" aria-label="Jev opponent">
+<div class="bar"><span>OPPONENT.TXT</span><span aria-hidden="true">_ x</span></div>
+<div class="robotbody"><svg class="robot" viewBox="0 0 86 66" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Jev, a friendly boxy pixel robot" shape-rendering="crispEdges"><g fill="#1E1E1E"><path d="M40 2h8v6h-3v5h24v6h6v29h-7v12H53v5H33v-5H18V48h-7V19h6v-6h24V8h-1z"/><path d="M3 32h7v18H3zm73 0h7v18h-7z"/></g><path fill="#F386A1" d="M21 17h44v30H21zM24 51h38v7H24z"/><path fill="#DEDEDE" d="M25 22h36v20H25z"/><g fill="#1E1E1E"><path d="M30 25h6v7h-6zm20 0h6v7h-6zM36 35h14v4H36zM28 59h8v7h-8zm23 0h8v7h-8z"/></g></svg><div class="status">Jev<br>YOUR MOVE.</div></div>
+</section>
+<p class="brand">jevplay.games</p>
+<script>
+// Graded discrete circles form soft halftone blobs without gradients or blur.
+const blobs=document.getElementById('blobs');
+for(const [cx,cy,rx,ry] of [[24,510,230,150],[1080,30,220,150],[620,560,170,100]]){
+  for(let y=0;y<570;y+=6) for(let x=0;x<1132;x+=6){
+    const d=((x-cx)/rx)**2+((y-cy)/ry)**2;
+    if(d>=1) continue;
+    const c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('cx',x);c.setAttribute('cy',y);c.setAttribute('r',(1.6*(1-d)**2).toFixed(2));blobs.appendChild(c);
+  }
+}
+</script>
+</body>
+</html>

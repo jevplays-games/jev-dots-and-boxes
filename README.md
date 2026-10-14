@@ -1,4 +1,4 @@
-<p align="center"><img src="assets/banner.jpg" alt="Pixel-art robot Jev drawing lines between glowing dots on a Box Score grid, claiming boxes one side at a time" width="100%"></p>
+<p align="center"><img src="assets/banner.png" alt="Flat pink and ink pixel-window banner for Box Score showing a dot-grid board, a box-score stat table and the Jev robot" width="100%"></p>
 
 <div align="center">
 
@@ -70,6 +70,8 @@ A provider failure is **not silently treated as Jev**: the match is demoted to l
 The configured model is pinned. A model, prompt, search-profile or source-revision change creates a separate ranking cohort. Do not change the model/version environment underneath an unfinished ranked match.
 
 ## How it works
+
+<p align="center"><img src="reports/desktop-preview.png" alt="Box Score at desktop width after a finished local-practice game, showing the claimed board, the decision observatory and the boxes-claimed and decision-latency charts" width="720"></p>
 
 ```mermaid
 %%{init: {"themeVariables": {"lineColor": "#E551BA"}}}%%
