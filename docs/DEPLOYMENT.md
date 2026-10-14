@@ -4,7 +4,7 @@
 
 `npm start` launches a localhost-only Node server. It executes the same Worker handlers through a small D1-compatible SQLite adapter. SQLite uses WAL and `synchronous=FULL`; the database is never part of the distribution ZIP.
 
-The static client can also be served independently for browser-only local practice. API absence must be visible; that mode has no trusted identity, JEV key, database or rankings. Use an HTTP localhost or HTTPS origin so Web Crypto and module workers are available; opening `index.html` directly from the filesystem is not a supported launch path.
+The static client can also be served independently for browser-only local practice. API absence must be visible; that mode has no trusted identity, Jev key, database or rankings. Use an HTTP localhost or HTTPS origin so Web Crypto and module workers are available; opening `index.html` directly from the filesystem is not a supported launch path.
 
 ## Hosted shape
 
@@ -31,6 +31,12 @@ npx wrangler d1 create dots-and-boxes
 
 Copy the returned database ID into `wrangler.jsonc`. Set `APP_ORIGIN` to the exact HTTPS origin, without a trailing slash. Use the deployed domain, not the placeholder.
 
+**Database name after the Box Score rename.** The production D1 database keeps its original name, `dots-and-boxes` (owner decision, 2026-10-14). A D1 database cannot be renamed in place, and the Worker reaches it through the `DB` binding, so the code does not depend on the name. Do not create a `box-score` database or migrate data; `wrangler.jsonc` and `npm run db:migrate` intentionally still name `dots-and-boxes`.
+
+### Hostnames during the rename
+
+The canonical origin is `https://box-score.jevplay.games` (`APP_ORIGIN`). Until cutover the same Worker also serves the pre-rename hostname, listed in `LEGACY_APP_ORIGINS` (comma-separated) and kept as a second custom-domain route in `wrangler.jsonc`. A request is accepted only on one of those origins, a mutation's `Origin` must match the hostname it was sent to, and Discord OAuth returns to the hostname the player started on (the session cookie is host-only). After the 301 redirect from the old hostname is live, remove it from `routes` and `LEGACY_APP_ORIGINS`.
+
 Set `SOURCE_REVISION` to the actual source commit identifier and `DEPLOYMENT_ID` to an operational release identifier. SOURCE_REVISION is included in the opponent cohort hash. Bump the analysis/prompt version when their semantics change.
 
 ```sh
@@ -49,7 +55,7 @@ Authenticate Wrangler through its own normal flow. No Cloudflare account or depl
 
 ### CPU and cost controls
 
-Hard and JEV profiles expand up to 10,000 and 40,000 search nodes respectively, distributed across root candidates. They are not suitable for an assumed minimal free CPU allowance. On a plan that supports a larger CPU budget, configure and test an explicit Worker CPU limit; for example:
+Hard and Jev profiles expand up to 10,000 and 40,000 search nodes respectively, distributed across root candidates. They are not suitable for an assumed minimal free CPU allowance. On a plan that supports a larger CPU budget, configure and test an explicit Worker CPU limit; for example:
 
 ```json
 "limits": { "cpu_ms": 30000 }
@@ -64,10 +70,11 @@ TypeSafe cost estimates remain null unless both `INPUT_USD_PER_MILLION` and `OUT
 ## Discord application
 
 1. Create/select a Discord application. Obtain application/client ID, OAuth client secret and application public key.
-2. Add the exact OAuth redirect:
+2. Add the exact OAuth redirect for every origin the Worker serves (both while the old hostname is live):
 
 ```text
-https://YOUR_DOMAIN/api/auth/discord/callback
+https://box-score.jevplay.games/api/auth/discord/callback
+https://dots-and-boxes.jevplay.games/api/auth/discord/callback
 ```
 
 For localhost testing add a separate exact redirect matching `.env`:
@@ -79,7 +86,7 @@ http://127.0.0.1:8787/api/auth/discord/callback
 3. Set the interactions endpoint to:
 
 ```text
-https://YOUR_DOMAIN/api/discord/interactions
+https://box-score.jevplay.games/api/discord/interactions
 ```
 
 The handler verifies Discord's Ed25519 signature before handling PING or commands, checks the application ID, and rejects timestamps outside a five-minute freshness window.
@@ -91,7 +98,7 @@ The handler verifies Discord's Ed25519 signature before handling PING or command
 node scripts/register-command.mjs
 ```
 
-The command is `/play`, described as Dots and Boxes. It is guild-install/guild-context only. The bot token is not needed by the running game or browser.
+The command is `/play`, described as "Play Box Score against Jev". Re-run the registration after the rename so Discord shows the new description. It is guild-install/guild-context only. The bot token is not needed by the running game or browser.
 
 5. Install the application to a participating guild with the application-command scope. Invoke `/play` from an ordinary guild text channel. The private button opens an opaque, one-time link bound to the invoking Discord user, channel and guild.
 
@@ -117,7 +124,7 @@ The cleanup processes at most 100 newly expired matches per run. A large backlog
 
 ## Production smoke checklist
 
-Verify HTTPS, exact-origin settings, all static assets and module workers, no browser console errors, key secrecy, successful/cancelled OAuth, one-time launch redemption, wrong-user rejection, both ranked starting seats, a complete JEV match, a provider-outage demotion, a refreshed match, replay audit, community scope isolation and quota behavior.
+Verify HTTPS, exact-origin settings, all static assets and module workers, no browser console errors, key secrecy, successful/cancelled OAuth, one-time launch redemption, wrong-user rejection, both ranked starting seats, a complete Jev match, a provider-outage demotion, a refreshed match, replay audit, community scope isolation and quota behavior.
 
 Inspect actual D1 row sizes and query costs. A full-evidence match can be hundreds of kilobytes; versioned 40-move games bound normal growth but do not make storage free. The included SQL provides storage and provider-failure queries.
 

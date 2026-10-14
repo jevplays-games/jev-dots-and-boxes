@@ -1,6 +1,6 @@
 import {all,first,fail,json} from './common.js';
 import {poolId} from './matches.js';
-import {PROFILES} from '../public/games/dots-and-boxes/analysis.js';
+import {PROFILES} from '../public/games/box-score/analysis.js';
 export async function leaderboard(request,env,session){
   const q=new URL(request.url).searchParams,scope=q.get('scope')??'world',difficulty=q.get('difficulty')??'normal',period=q.get('period')??'month';
   if(!['world','server','channel'].includes(scope)||!PROFILES[difficulty]||!['month','all'].includes(period))fail(400,'invalid_filters');

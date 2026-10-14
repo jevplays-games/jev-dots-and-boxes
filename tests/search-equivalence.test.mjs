@@ -1,6 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';
-import {evaluate,evaluateReference,analyzeCandidates} from '../public/games/dots-and-boxes/analysis.js';
-import {createInitialState,applyAction,getLegalActions} from '../public/games/dots-and-boxes/rules.js';
+import {evaluate,evaluateReference,analyzeCandidates} from '../public/games/box-score/analysis.js';
+import {createInitialState,applyAction,getLegalActions} from '../public/games/box-score/rules.js';
 // The fast search must be the reference algorithm, not an approximation: same value, exactness, node budget use, cache hits and cutoffs.
 let seed=2026;const rnd=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};
 function randomState(ply){let s=createInitialState({size:4,firstPlayer:0});for(let i=0;i<ply&&s.toMove!==null;i++){const l=getLegalActions(s);s=applyAction(s,l[Math.floor(rnd()*l.length)]).state;}return s;}

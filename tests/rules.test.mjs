@@ -1,6 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';
-import {geometry,createInitialState,getLegalActions,applyAction,serialize,deserialize,getScore,getOutcome,replay,RULES_VERSION} from '../public/games/dots-and-boxes/rules.js';
-import {analyzeCandidates,components,exactRegret,heuristicAction} from '../public/games/dots-and-boxes/analysis.js';
+import {geometry,createInitialState,getLegalActions,applyAction,serialize,deserialize,getScore,getOutcome,replay,RULES_VERSION} from '../public/games/box-score/rules.js';
+import {analyzeCandidates,components,exactRegret,heuristicAction} from '../public/games/box-score/analysis.js';
 function rng(seed){return()=>{seed=(1664525*seed+1013904223)>>>0;return seed/4294967296;};}
 test('4x4 default has 40 edges, 16 boxes and correct adjacency',()=>{const s=createInitialState(),g=geometry();assert.equal(s.edges.length,40);assert.equal(s.boxes.length,16);assert.equal(getLegalActions(s).length,40);assert.equal(g.edges.filter(e=>e.boxes.length===1).length,16);assert.equal(g.edges.filter(e=>e.boxes.length===2).length,24);});
 test('all supported sizes have unique geometry and round-trip serialization',()=>{for(let size=1;size<=6;size++){const g=geometry(size),s=createInitialState({size});assert.equal(new Set(g.edges.map(e=>e.id)).size,2*size*(size+1));assert.deepEqual(deserialize(serialize(s)),s);for(const b of g.boxes)for(const e of b.edges)assert.ok(g.edges[e].boxes.includes(b.id));}});

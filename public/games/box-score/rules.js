@@ -1,5 +1,12 @@
-/** Pure deterministic Dots and Boxes rules. No DOM, I/O, RNG or external packages. */
-export const GAME_ID = 'dots-and-boxes';
+/** Pure deterministic Box Score rules (the classic pencil-and-paper boxes game). No DOM, I/O, RNG or external packages. */
+export const GAME_ID = 'box-score';
+// Compat shim: the game was published as 'dots-and-boxes'. Replays exported before the rename still import,
+// and the model-facing Jev payload keeps the old id so prompt/profile hashes (and leaderboard cohorts) do not split.
+export const LEGACY_GAME_ID = 'dots-and-boxes';
+export const GAME_IDS = Object.freeze([GAME_ID, LEGACY_GAME_ID]);
+// Replays are written in the original wire format; the jevplay-branded name is accepted for forward compatibility.
+export const REPLAY_FORMAT = 'jev-arcade-replay-v1';
+export const REPLAY_FORMATS = Object.freeze([REPLAY_FORMAT, 'jevplay-replay-v1']);
 export const RULES_VERSION = 'dots-boxes-v1';
 const geometries = new Map();
 const owner = value => value === null || value === 0 || value === 1;
@@ -62,14 +69,14 @@ export function edgeLabel(size, id) {
   return `${a}–${b}`;
 }
 export function exportReplay(state, events=[], opponent={}) {
-  return {format:'jev-arcade-replay-v1',game:GAME_ID,rulesVersion:RULES_VERSION,boardSize:state.size,firstPlayer:state.firstPlayer,opponent,actions:events.filter(e=>e.type==='move_committed').map(e=>({edgeId:e.data.edgeId})),termination:isTerminal(state)?'completed':'in_progress'};
+  return {format:REPLAY_FORMAT,game:GAME_ID,rulesVersion:RULES_VERSION,boardSize:state.size,firstPlayer:state.firstPlayer,opponent,actions:events.filter(e=>e.type==='move_committed').map(e=>({edgeId:e.data.edgeId})),termination:isTerminal(state)?'completed':'in_progress'};
 }
 export function replay(data) {
-  if (!data || data.format!=='jev-arcade-replay-v1'||data.game!==GAME_ID||data.rulesVersion!==RULES_VERSION) throw new Error('Unsupported replay.');
+  if (!data || !REPLAY_FORMATS.includes(data.format)||!GAME_IDS.includes(data.game)||data.rulesVersion!==RULES_VERSION) throw new Error('Unsupported replay.');
   let state=createInitialState({size:data.boardSize,firstPlayer:data.firstPlayer});
   if (!Array.isArray(data.actions)||data.actions.length>state.edges.length) throw new Error('Invalid action count.');
   const states=[state];
   for (const a of data.actions) { state=applyAction(state,a).state; states.push(state); }
   return {state,states,outcome:getOutcome(state),score:getScore(state)};
 }
-export const dotsAndBoxes={id:GAME_ID,version:RULES_VERSION,createInitialState,getLegalActions,applyAction,isTerminal,getScore,getOutcome,serialize,deserialize};
+export const boxScore={id:GAME_ID,version:RULES_VERSION,createInitialState,getLegalActions,applyAction,isTerminal,getScore,getOutcome,serialize,deserialize};

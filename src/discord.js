@@ -19,5 +19,5 @@ export async function interaction(request,env){
   if(previous)return json({type:4,data:{content:'This interaction was already handled. Invoke /play again for a new link.',flags:64}});
   const launch=token();
   await run(env,'INSERT INTO discord_launches(token_hash,interaction_id,discord_user_id,guild_id,channel_id,expires_at) VALUES(?,?,?,?,?,?)',await sha256(launch),p.id,p.member.user.id,p.guild_id,channel,Date.now()+600000);
-  return json({type:4,data:{content:'Play Dots and Boxes against JEV. This personal link expires in 10 minutes.',flags:64,components:[{type:1,components:[{type:2,style:5,label:'Play Dots and Boxes',url:`${env.APP_ORIGIN}/?launch=${launch}`}]}]}});
+  return json({type:4,data:{content:'Play Box Score against Jev. This personal link expires in 10 minutes.',flags:64,components:[{type:1,components:[{type:2,style:5,label:'Play Box Score',url:`${env.APP_ORIGIN}/?launch=${launch}`}]}]}});
 }

@@ -1,6 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';
 import {canonical,sha256,appendEvent,auditMatch,summarize,csv,statistics,distributionMetrics} from '../public/analytics.js';
-import {createInitialState,applyAction,serialize,getOutcome} from '../public/games/dots-and-boxes/rules.js';
+import {createInitialState,applyAction,serialize,getOutcome} from '../public/games/box-score/rules.js';
 async function fixture(){const m={id:'fixture',state:createInitialState({size:1}),events:[],mode:'local',ranked:false,verified:false,status:'active',createdAt:Date.now()};for(const edgeId of [0,1,2,3]){const before=m.state,decisionId=`d${edgeId}`,player=before.toMove;if(player===1)await appendEvent(m,'decision_completed',{decisionId,edgeId,source:'local',candidateCount:4-edgeId,totalMs:10,confidence:null});const transition=applyAction(before,{edgeId});m.state=transition.state;await appendEvent(m,'move_committed',{...transition.event,decisionId,source:player===1?'local':'human',preStateHash:await sha256(serialize(before)),postStateHash:await sha256(serialize(m.state)),turnElapsedMs:5});}m.status='completed';m.outcome=getOutcome(m.state);return m;}
 test('canonical JSON sorts keys and stable hashes agree',async()=>{assert.equal(canonical({b:1,a:2}),'{"a":2,"b":1}');assert.equal(await sha256({b:1,a:2}),await sha256({a:2,b:1}));});
 test('valid journal passes structural and gameplay audit',async()=>{const m=await fixture(),r=await auditMatch(m);assert.equal(r.ok,true,JSON.stringify(r.errors));assert.equal(r.score.human+r.score.jev,1);});

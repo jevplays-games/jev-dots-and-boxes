@@ -11,4 +11,4 @@ Official documentation consulted on 2026-09-22 while implementing the boundary c
 - Cloudflare D1 database API: https://developers.cloudflare.com/d1/worker-api/d1-database/
 - Cloudflare Workers Web Crypto: https://developers.cloudflare.com/workers/runtime-apis/web-crypto/
 
-The included user's game brief and the preceding Dots and Boxes engineering plan supplied the product requirements. Runtime source and executed tests—not assumptions about a provider—define this package's implemented behavior. Credentials, application IDs, database IDs, public origin and actual deployment revision remain operator configuration.
+The included user's game brief and the preceding Box Score engineering plan supplied the product requirements. Runtime source and executed tests—not assumptions about a provider—define this package's implemented behavior. Credentials, application IDs, database IDs, public origin and actual deployment revision remain operator configuration.

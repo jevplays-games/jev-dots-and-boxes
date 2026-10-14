@@ -32,7 +32,7 @@ The client never submits a score or chooses the official opponent's action. Ther
 | Threat | Control | Residual limit |
 |---|---|---|
 | Changed browser score | Scores derived from authoritative box ownership | External solver assistance remains possible |
-| Fabricated weak JEV replay | Server obtains and records provider decisions | The application/database operator remains trusted |
+| Fabricated weak Jev replay | Server obtains and records provider decisions | The application/database operator remains trusted |
 | Double click/retry | Request IDs and gameplay revision | A reused ID with a different move is rejected |
 | Concurrent tabs / answer shopping | Database CAS and reserved decision lease | Interrupted provider calls may have unreported billing |
 | Stale inference | Decision nonce and expected revision | Expired reservations lose ranked eligibility |
@@ -42,7 +42,7 @@ The client never submits a score or chooses the official opponent's action. Ther
 | Session theft | Opaque token, server-side hash, HttpOnly/Secure host cookie | Browser/device compromise is outside this boundary |
 | XSS from a display name | Text nodes, no name interpolation into HTML | Browser extensions can still modify the local page |
 | CSV formula injection | Text beginning with formula characters is prefixed | Analysts should still treat exports as untrusted files |
-| Prompt injection | Server constructs fixed questions from numeric game data | No free-text chat or user identity is sent to JEV |
+| Prompt injection | Server constructs fixed questions from numeric game data | No free-text chat or user identity is sent to Jev |
 | Secret leakage | No browser credentials; logs allowlist only operational fields | Upstream access-log configuration must also redact queries |
 | Unlimited inference | Match ownership, turns, global/day quota, limited retries | Edge abuse protections and billing caps are still needed |
 

@@ -30,7 +30,7 @@ const server=http.createServer(async(req,res)=>{
     const jobs=[],response=await worker.fetch(request,env,{waitUntil:p=>jobs.push(p)});res.writeHead(response.status,Object.fromEntries(response.headers));res.end(Buffer.from(await response.arrayBuffer()));await Promise.allSettled(jobs);
   }catch{res.writeHead(500,{'Content-Type':'text/plain'});res.end('Development server error.');}
 });
-server.listen(port,host,()=>console.log(`Dots and Boxes: ${origin}\nOpponent: ${env.TYPESAFE_API_KEY?'JEV available':'local practice (no API key)'}\nDatabase: ${process.env.DB_PATH??'.data/game.sqlite'}`));
+server.listen(port,host,()=>console.log(`Box Score: ${origin}\nOpponent: ${env.TYPESAFE_API_KEY?'Jev available':'local practice (no API key)'}\nDatabase: ${process.env.DB_PATH??'.data/game.sqlite'}`));
 worker.scheduled({},env,{}).catch(()=>{});
 const cleanup=setInterval(()=>worker.scheduled({},env,{}).catch(()=>{}),3600000);cleanup.unref();
 for(const signal of ['SIGINT','SIGTERM'])process.on(signal,()=>{clearInterval(cleanup);server.close(()=>{DB.close();process.exit(0);});});

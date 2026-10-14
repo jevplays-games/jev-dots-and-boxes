@@ -18,8 +18,8 @@ flowchart TD
   Search --> P[Persist decision reservation and request evidence]
   P --> One{One admissible move?}
   One -->|Yes| Forced[Record forced or solver source]
-  One -->|No| JEV[Structured Choice request]
-  JEV --> V[Validate model, option set and distribution]
+  One -->|No| Jev[Structured Choice request]
+  Jev --> V[Validate model, option set and distribution]
   Forced --> V
   V --> CAS[Check revision and decision lease]
   CAS --> Apply[Apply edge using shared rules]
@@ -31,11 +31,11 @@ flowchart TD
 
 The feature extractor computes immediate captures, newly exposed third sides, next player, opponent capture opportunities, remaining safe edges and structural components. Components become `chain` or `loop` only when their open-edge degree/port conditions hold. Other positions remain `unclassified`.
 
-Difficulty profiles are fixed data: Easy (features, no search), Normal (depth 2, 2,000 nodes), Hard (depth 4, 10,000), JEV (depth 6, 40,000, attempted completion when at most ten edges remain). Root candidates receive equal node budgets. Search follows the actual actor instead of alternating blindly after a capture.
+Difficulty profiles are fixed data: Easy (features, no search), Normal (depth 2, 2,000 nodes), Hard (depth 4, 10,000), Jev (depth 6, 40,000, attempted completion when at most ten edges remain). Root candidates receive equal node budgets. Search follows the actual actor instead of alternating blindly after a capture.
 
 At a cutoff, a deterministic capture-only continuation supplies an explicitly approximate evaluation. It does not finish an arbitrary whole board at each leaf. This changed from the initial full-rollout idea after timing exposed excessive work. No specialized handout formula is applied indiscriminately.
 
-The highest profile may restrict JEV to proven optimal actions when every root candidate is exactly solved. Source labels distinguish `jev`, `local`, `fallback`, `forced` and `solver`. The implementation makes no unmeasured claim that the strongest-looking configuration is actually strongest; benchmark it.
+The highest profile may restrict Jev to proven optimal actions when every root candidate is exactly solved. Source labels distinguish `jev`, `local`, `fallback`, `forced` and `solver`. The implementation makes no unmeasured claim that the strongest-looking configuration is actually strongest; benchmark it.
 
 ## Match persistence
 

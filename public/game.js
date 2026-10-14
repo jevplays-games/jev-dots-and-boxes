@@ -1,5 +1,5 @@
-import {geometry,createInitialState,applyAction,getLegalActions,getScore,getOutcome,serialize,edgeLabel,exportReplay,replay} from './games/dots-and-boxes/rules.js';
-import {analyzeCandidates,selectLocal,exactRegret,tacticalSnapshot} from './games/dots-and-boxes/analysis.js';
+import {geometry,createInitialState,applyAction,getLegalActions,getScore,getOutcome,serialize,edgeLabel,exportReplay,replay} from './games/box-score/rules.js';
+import {analyzeCandidates,selectLocal,exactRegret,tacticalSnapshot} from './games/box-score/analysis.js';
 import {appendEvent,sha256,summarize,auditMatch,exportTables,csv} from './analytics.js';
 const $=id=>document.getElementById(id), svgNS='http://www.w3.org/2000/svg';
 const fmt=(n,d=0)=>Number.isFinite(n)?n.toLocaleString(undefined,{maximumFractionDigits:d}):'—';
@@ -76,13 +76,13 @@ async function advance(){
     }else await localOpponent();
   }
 }
-// JEV's move is computed on the server and can occasionally fail transiently; retry a couple of times before giving up.
+// Jev's move is computed on the server and can occasionally fail transiently; retry a couple of times before giving up.
 async function advanceWithRetry(){
   for(let attempt=0;;attempt++){
     try{await advance();return;}
     catch(e){
       if(attempt>=2||!(e.status>=500||e.code==='bad_response'))throw e;
-      toast('JEV is taking a moment — retrying…');await new Promise(resolve=>setTimeout(resolve,1500));
+      toast('Jev is taking a moment — retrying…');await new Promise(resolve=>setTimeout(resolve,1500));
     }
   }
 }
@@ -101,8 +101,8 @@ async function action(edgeId){
    reload rejoins rather than opening a second match.
    Ranked is taken only when the checkbox is enabled, the same gate the player
    faces by hand (online, signed in, ranked capability, not local mode). $('mode')
-   is already pinned to 'local' when the server reports no JEV, so an
-   auto-started game is never relabeled as JEV. */
+   is already pinned to 'local' when the server reports no Jev, so an
+   auto-started game is never relabeled as Jev. */
 async function autoStart(){
   if(busy||!match?.preview)return;
   $('ranked').checked=!$('ranked').disabled;
@@ -170,17 +170,17 @@ function render(){
   if(!match)return;const start=performance.now(),s=match.state,score=getScore(s),summary=online&&match.summary?match.summary:summarize(match);
   $('human-score').textContent=score.human;$('jev-score').textContent=score.jev;$('human-score-large').textContent=score.human;$('jev-score-large').textContent=score.jev;
   const running=match.status==='active';$('human-card').classList.toggle('is-turn',running&&s.toMove===0);$('jev-card').classList.toggle('is-turn',running&&s.toMove===1);
-  $('human-turn').hidden=!running||s.toMove!==0;$('jev-turn').hidden=!running||s.toMove!==1;$('opponent-name').textContent=match.mode==='jev'?'JEV':'LOCAL';
+  $('human-turn').hidden=!running||s.toMove!==0;$('jev-turn').hidden=!running||s.toMove!==1;$('opponent-name').textContent=match.mode==='jev'?'Jev':'Local';
   $('remaining').textContent=`${s.edges.length-s.ply} EDGES LEFT`;
   let status=running?(busy?(s.toMove===1?'Evaluating the opponent’s move…':'Committing your move…'):'Your move. Draw a line between two dots.'):
     match.status==='forfeit'?'Match conceded.':match.outcome==='draw'?'A draw. Eight boxes each.':match.outcome==='win'?'You win. The board is complete.':'Opponent wins. The board is complete.';
   const lastMove=match.events.findLast(e=>e.type==='move_committed');if(running&&!busy&&lastMove?.data.player===0&&lastMove.data.capturedBoxes.length)status='You captured a box. Draw another line.';
   $('status').textContent=status;{const row=$('status').parentElement,over=!running&&!match.preview&&match.status!=='forfeit'&&s.toMove===null,res=over?(match.outcome==='win'?'is-win':match.outcome==='draw'?'is-draw':'is-loss'):'';row.classList.toggle('jv-plaque',over);for(const k of ['is-win','is-draw','is-loss'])row.classList.toggle(k,k===res);}$('pipeline').classList.toggle('busy',busy&&s.toMove===1);
-  $('eligibility').textContent=match.preview?'READY TO PLAY':match.ranked?(match.verified?'VERIFIED RANKED':'RANKED MATCH'):match.mode==='local'?'LOCAL PRACTICE':'UNRANKED JEV';
+  $('eligibility').textContent=match.preview?'READY TO PLAY':match.ranked?(match.verified?'VERIFIED RANKED':'RANKED MATCH'):match.mode==='local'?'LOCAL PRACTICE':'UNRANKED · Jev';
   $('notice').hidden=!match.notice;$('notice').textContent=match.notice??'';
   $('new-game').disabled=busy;$('ranked').disabled=!online||!session?.user||!session?.capabilities?.ranked||$('mode').value==='local';if($('ranked').disabled)$('ranked').checked=false;
   $('connection').textContent=online?'Server-authoritative · evidence stays with your match':'Browser-only practice · not eligible for leaderboards';
-  $('agent-title').textContent=match.mode==='jev'?'JEV · '+(match.profile?.model??'pinned model'):'Local practice · not JEV';
+  $('agent-title').textContent=match.mode==='jev'?'Jev · '+(match.profile?.model??'pinned model'):'Local practice · not Jev';
   $('agent-state').textContent=busy&&s.toMove===1?'Waiting for a validated decision':`${match.difficulty[0].toUpperCase()+match.difficulty.slice(1)} · ${online?'server-authoritative':'offline browser'}`;
   buildBoard();renderDecision();$('event-count').textContent=match.events.length;
   if(tab==='overview')renderOverview(summary);if(tab==='candidates')renderCandidates();if(tab==='timeline')renderTimeline();if(tab==='replay')renderReplay();
@@ -248,7 +248,7 @@ async function exportData(format){
     if(online){const r=await fetch(`/api/matches/${match.id}/export?format=${format}`,{credentials:'same-origin',...(bearer?{headers:{Authorization:`Bearer ${bearer}`}}:{})});if(!r.ok)throw Error('Export failed.');text=await r.text();type=r.headers.get('content-type');}
     else if(format==='json')text=JSON.stringify(match,null,2);else if(format==='summary')text=JSON.stringify(summarize(match),null,2);else if(format==='replay')text=JSON.stringify(replayData(),null,2);else if(format==='jsonl')text=match.events.map(e=>JSON.stringify(e)).join('\n')+'\n';else text=csv(exportTables(match)[format]);
     if(format==='jsonl'){extension='jsonl';type='application/x-ndjson';}else if(['moves','decisions','candidates','attempts'].includes(format)){extension='csv';type='text/csv';}
-    download(text,type,`dots-${match.id}-${format}.${extension}`);telemetry('export_clicked');
+    download(text,type,`box-score-${match.id}-${format}.${extension}`);telemetry('export_clicked');
   }catch(e){toast(e.message);}
 }
 for(const button of document.querySelectorAll('[data-close]'))button.addEventListener('click',()=>$(button.dataset.close).close());

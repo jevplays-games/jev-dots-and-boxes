@@ -3,14 +3,15 @@ import {interaction} from './discord.js';
 import {activityConfig,createActivitySession} from './activity.js';
 import {createMatch,stepMatch,loadMatch,snapshot,matchExport,expireMatches} from './matches.js';
 import {leaderboard,personalHistory} from './leaderboard.js';
-import {json,body,fail,responseSecurity,operation,run,all,quota} from './common.js';
+import {json,body,fail,responseSecurity,operation,run,all,quota,allowedOrigin} from './common.js';
+import {GAME_ID} from '../public/games/box-score/rules.js';
 import {summarize,statistics} from '../public/analytics.js';
 async function routes(request,env){
   const url=new URL(request.url),path=url.pathname;
-  if(!env.APP_ORIGIN||url.origin!==env.APP_ORIGIN)fail(400,'origin_configuration_mismatch');
+  if(!env.APP_ORIGIN||!allowedOrigin(env,url.origin))fail(400,'origin_configuration_mismatch');
   if(!path.startsWith('/api/'))return env.ASSETS.fetch(request);
   if(!env.DB)fail(503,'database_not_configured');
-  if(path==='/api/health'&&request.method==='GET')return json({ok:true,game:'dots-and-boxes',version:'1.0.0'});
+  if(path==='/api/health'&&request.method==='GET')return json({ok:true,game:GAME_ID,version:'1.0.0'});
   if(path==='/api/discord/interactions'&&request.method==='POST')return interaction(request,env);
   if(path==='/api/session'&&request.method==='GET')return sessionResponse(request,env);
   if(path==='/api/activity/config'&&request.method==='GET')return activityConfig(env);
