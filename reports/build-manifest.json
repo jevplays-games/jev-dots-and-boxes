@@ -1,11 +1,11 @@
 {
   "package": "jev-box-score",
   "version": "1.0.0",
-  "builtAt": "2026-10-14T22:50:15.574117+00:00",
+  "builtAt": "2026-10-15T07:13:32.221610+00:00",
   "node": "v24.15.0",
   "runtimeDependencies": 0,
   "validation": {
-    "nodeTestsPassed": 78,
+    "nodeTestsPassed": 85,
     "nodeTestsFailed": 0,
     "browserChecksPassed": 17,
     "browserMode": "embedded-source-with-real-HTTP-bridge",
@@ -29,13 +29,13 @@
     },
     {
       "path": "public/game.css",
-      "bytes": 25861,
-      "gzipBytes": 6107
+      "bytes": 27514,
+      "gzipBytes": 6748
     },
     {
       "path": "public/game.js",
-      "bytes": 34468,
-      "gzipBytes": 11442
+      "bytes": 35064,
+      "gzipBytes": 11698
     },
     {
       "path": "public/games/box-score/analysis.js",
@@ -49,10 +49,10 @@
     },
     {
       "path": "public/index.html",
-      "bytes": 16179,
-      "gzipBytes": 5243
+      "bytes": 16293,
+      "gzipBytes": 5306
     }
   ],
-  "totalPublicBytes": 103215,
-  "totalPublicGzipBytes": 32527
+  "totalPublicBytes": 105578,
+  "totalPublicGzipBytes": 33487
 }

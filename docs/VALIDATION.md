@@ -6,7 +6,7 @@ Packaging date: 2026-09-22. Runtime: Node v22.16.0 on Linux, built-in SQLite; br
 
 | Check | Executed result | Evidence |
 |---|---|---|
-| Node unit/integration suite | **63 passed, 0 failed, 0 skipped** | `reports/test-results.txt` |
+| Node unit/integration suite | **63 passed, 0 failed, 0 skipped** at packaging; the suite has grown since, and `reports/test-results.txt` holds the latest run (85 passed, 0 failed, 0 skipped on 2026-10-14, Node v24.15.0, for the Box Score rename) | `reports/test-results.txt` |
 | One-box exhaustive move orders | Both starters × 24 complete edge permutations | `tests/rules.test.mjs` |
 | Seeded complete games | 1,000 deterministic rule-invariant checks | `tests/rules.test.mjs` |
 | Independent exact-search oracle | 20 sampled five-edge endgames, every legal root compared | `tests/rules.test.mjs` |

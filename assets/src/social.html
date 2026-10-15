@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1280, initial-scale=1">
+<title>Box Score · jevplay.games</title>
+<style>
+@font-face{font-family:Inter;font-style:normal;font-weight:100 900;font-display:block;src:url('../../public/brand/inter-var.woff2') format('woff2')}
+@font-face{font-family:VT323;font-style:normal;font-weight:400;font-display:block;src:url('../../public/brand/vt323.woff2') format('woff2')}
+:root{--pink:#F386A1;--ink:#1E1E1E;--panel:#DEDEDE;--paper:#FEFEFE}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1280px;height:640px;overflow:hidden;background:var(--pink)}
+body{position:relative;color:var(--ink);font-family:VT323,"JetBrains Mono",monospace}
+.frame{position:absolute;inset:30px 34px;border:1px solid var(--ink);overflow:hidden}
+.texture{position:absolute;inset:0;width:100%;height:100%}
+.tag{position:absolute;top:48px;left:64px;padding:3px 9px;background:var(--ink);color:var(--pink);font-size:20px;line-height:22px;letter-spacing:1px;border:1px dotted var(--pink);outline:1px solid var(--ink)}
+.mark{position:absolute;width:10px;height:10px;border:0 solid var(--ink)}
+.tl{left:12px;top:10px;border-left-width:1px;border-top-width:1px}.tr{right:12px;top:10px;border-right-width:1px;border-top-width:1px}.bl{left:12px;bottom:10px;border-left-width:1px;border-bottom-width:1px}.br{right:12px;bottom:10px;border-right-width:1px;border-bottom-width:1px}
+h1{position:absolute;left:64px;top:91px;font-family:Inter,sans-serif;font-weight:700;font-size:112px;line-height:1.1;letter-spacing:-.05em}
+.sub{position:absolute;left:70px;top:218px;background:var(--ink);color:var(--paper);padding:3px 8px;font-size:26px;line-height:30px;white-space:nowrap}
+.win{position:absolute;left:70px;top:280px;width:740px;height:266px;border:1px solid var(--ink);background:var(--panel);box-shadow:inset 0 0 0 2px var(--paper),3px 3px 0 var(--ink)}
+.bar{display:flex;justify-content:space-between;padding:2px 7px;background:var(--ink);color:var(--paper);font-size:20px;line-height:21px}
+.body{display:flex;align-items:center;gap:38px;padding:14px 25px;font-size:24px;line-height:26px}
+.board{display:block;flex:none;width:204px;height:204px;background:var(--paper);border:1px solid var(--ink)}
+.score{flex:1}
+.score-label{font-size:22px;letter-spacing:2px;margin-bottom:8px}
+table{width:100%;border-collapse:collapse;font-size:30px;line-height:38px}
+th{font-weight:400;text-align:left}td{text-align:right}th,td{border-top:1px solid var(--ink);padding:3px 8px}
+.score-note{border-top:1px dotted var(--ink);padding-top:9px;margin-top:8px;font-size:22px}
+.mascot{position:absolute;left:890px;top:287px;width:258px;text-align:center}
+.robot{display:block;width:258px;height:198px}
+.chips{display:flex;justify-content:center;gap:8px;font-size:24px;line-height:26px;margin-top:18px}.chips span{padding:2px 8px;background:var(--panel);border:1px solid var(--ink)}
+footer{position:absolute;left:70px;bottom:47px;font-size:26px;line-height:28px}
+</style>
+</head>
+<body>
+<div class="mark tl"></div><div class="mark tr"></div><div class="mark bl"></div><div class="mark br"></div>
+<div class="frame" aria-hidden="true">
+<svg class="texture" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="dots" width="6" height="6" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r=".65" fill="#1E1E1E"/></pattern></defs><rect width="100%" height="100%" fill="url(#dots)" opacity=".4"/><g id="blobs" fill="#1E1E1E" opacity=".65"></g></svg>
+</div>
+<div class="tag">JEVPLAY.GAMES/BOX-SCORE</div>
+<h1>Box Score</h1>
+<p class="sub">Connect the dots. Claim the boxes.</p>
+<section class="win" aria-label="Box Score game in progress">
+<div class="bar"><span>BOX_SCORE.TXT</span><span aria-hidden="true">_ x</span></div>
+<div class="body">
+<svg class="board" viewBox="0 0 204 204" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Four by four dots: two boxes claimed by You, one by Jev">
+<defs><pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" fill="#DEDEDE"/><path d="M-2 2L2-2M0 8L8 0M6 10L10 6M-2 6L2 10M0 0L8 8M6-2L10 2" stroke="#1E1E1E" stroke-width="1"/></pattern></defs>
+<g fill="#F386A1"><rect x="21" y="21" width="54" height="54"/><rect x="21" y="75" width="54" height="54"/></g>
+<rect x="75" y="75" width="54" height="54" fill="url(#hatch)"/>
+<g fill="none" stroke="#1E1E1E" stroke-width="4"><path d="M21 129V21H129M21 75H75M21 129H75M75 21V129M129 21H183V75M129 183H183"/><path d="M75 75H129V129H75" stroke-dasharray="6 3"/></g>
+<g id="board-dots" fill="#1E1E1E"><circle cx="21" cy="21" r="5"/><circle cx="75" cy="21" r="5"/><circle cx="129" cy="21" r="5"/><circle cx="183" cy="21" r="5"/><circle cx="21" cy="75" r="5"/><circle cx="75" cy="75" r="5"/><circle cx="129" cy="75" r="5"/><circle cx="183" cy="75" r="5"/><circle cx="21" cy="129" r="5"/><circle cx="75" cy="129" r="5"/><circle cx="129" cy="129" r="5"/><circle cx="183" cy="129" r="5"/><circle cx="21" cy="183" r="5"/><circle cx="75" cy="183" r="5"/><circle cx="129" cy="183" r="5"/><circle cx="183" cy="183" r="5"/></g>
+</svg>
+<div class="score"><p class="score-label">BOXES CLAIMED</p><table aria-label="Score"><tbody><tr><th scope="row">You</th><td>02</td></tr><tr><th scope="row">Jev</th><td>01</td></tr></tbody></table><p class="score-note">One line. One more box.</p></div>
+</div>
+</section>
+<div class="mascot"><svg class="robot" viewBox="0 0 86 66" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Jev, a friendly boxy pixel robot" shape-rendering="crispEdges"><g fill="#1E1E1E"><path d="M40 2h8v6h-3v5h24v6h6v29h-7v12H53v5H33v-5H18V48h-7V19h6v-6h24V8h-1z"/><path d="M3 32h7v18H3zm73 0h7v18h-7z"/></g><path fill="#F386A1" d="M21 17h44v30H21zM24 51h38v7H24z"/><path fill="#DEDEDE" d="M25 22h36v20H25z"/><g fill="#1E1E1E"><path d="M30 25h6v7h-6zm20 0h6v7h-6zM36 35h14v4H36zM28 59h8v7h-8zm23 0h8v7h-8z"/></g></svg><div class="chips"><span>You vs Jev</span></div></div>
+<footer>box-score.jevplay.games  ·  jevplay.games</footer>
+<script>
+// Graded circle radii give the reference's soft halftone blobs without gradients.
+const blobs = document.getElementById('blobs');
+for (const [cx,cy,rx,ry] of [[60,475,220,160],[1080,155,190,130],[1130,530,150,85]]) {
+  for (let y=0;y<580;y+=6) for (let x=0;x<1210;x+=6) {
+    const d=((x-cx)/rx)**2+((y-cy)/ry)**2;
+    if(d>=1) continue;
+    const circle=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    circle.setAttribute('cx',x);circle.setAttribute('cy',y);
+    circle.setAttribute('r',(1.35*(1-d)**2).toFixed(2));blobs.append(circle);
+  }
+}
+</script>
+</body>
+</html>

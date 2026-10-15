@@ -35,7 +35,7 @@ Copy the returned database ID into `wrangler.jsonc`. Set `APP_ORIGIN` to the exa
 
 ### Hostnames during the rename
 
-The canonical origin is `https://box-score.jevplay.games` (`APP_ORIGIN`). Until cutover the same Worker also serves the pre-rename hostname, listed in `LEGACY_APP_ORIGINS` (comma-separated) and kept as a second custom-domain route in `wrangler.jsonc`. A request is accepted only on one of those origins, a mutation's `Origin` must match the hostname it was sent to, and Discord OAuth returns to the hostname the player started on (the session cookie is host-only). After the 301 redirect from the old hostname is live, remove it from `routes` and `LEGACY_APP_ORIGINS`.
+The canonical origin is `https://box-score.jevplay.games` (`APP_ORIGIN`). Until cutover the same Worker also serves the pre-rename hostname, listed in `LEGACY_APP_ORIGINS` (comma-separated) and kept as a second custom-domain route in `wrangler.jsonc`. Each `LEGACY_APP_ORIGINS` entry must be a bare `https://host` origin (one trailing `/` is tolerated); an entry with userinfo, a path, query, fragment or `*` is skipped with one `legacy_origin_skipped` warning in the Worker log and never admitted. A request is accepted only on one of those origins, a mutation's `Origin` must match the hostname it was sent to, and Discord OAuth returns to the hostname the player started on (the session cookie is host-only). After the 301 redirect from the old hostname is live, remove it from `routes` and `LEGACY_APP_ORIGINS`.
 
 Set `SOURCE_REVISION` to the actual source commit identifier and `DEPLOYMENT_ID` to an operational release identifier. SOURCE_REVISION is included in the opponent cohort hash. Bump the analysis/prompt version when their semantics change.
 
