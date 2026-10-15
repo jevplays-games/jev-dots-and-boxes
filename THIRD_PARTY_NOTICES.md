@@ -9,6 +9,13 @@ This package has no runtime dependencies. The following third-party assets are v
 - Vendored at: `public/brand/inter-var.woff2`
 - License text: `public/brand/OFL.txt`
 
+## VT323
+
+- License: SIL Open Font License, Version 1.1
+- Copyright 2011, The VT323 Project Authors (peter.hull@oikoi.com)
+- Vendored at: `public/brand/vt323.woff2`
+- License text: `public/brand/OFL-VT323.txt`
+
 ## @discord/embedded-app-sdk
 
 - Version: 2.5.0
