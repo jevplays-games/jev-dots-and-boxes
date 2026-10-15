@@ -24,6 +24,9 @@
 .r8{grid-row:9}.c8{grid-column:9}
 /* Shell integration. brand.css owns the header; one set of secondary controls
    lives in #jv-controls, which brand.js moves between the sheet and the header. */
+/* The header is sticky, so whatever is scrolled into view (the "Skip to game" target, a keyboard-focused edge)
+   stops below it instead of underneath. --header-h tracks the header and is 0 where the header is hidden. */
+html{scroll-padding-top:calc(var(--header-h) + var(--sa-t) + var(--s2))}
 .jv-tagline{margin:var(--s3) 0 0;font-size:var(--fs-xs);letter-spacing:2px;color:var(--subtle)}
 .jv-status strong{color:var(--text)}.jv-status strong:first-of-type{color:var(--text)}.jv-status strong:last-of-type{color:var(--text)}.jv-status .key{margin-right:2px}
 .jv-hero{margin-bottom:var(--s6)}
