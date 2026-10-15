@@ -81,7 +81,8 @@ with sync_playwright() as p:
         overflow=page.evaluate('document.documentElement.scrollWidth > window.innerWidth')
         assert not overflow,f'Horizontal page overflow at {width}px'
         viewports.append({'width':width,'height':height,'overflow':overflow})
-        if width==390:page.screenshot(path=str(REPORTS/'mobile-preview.png'),full_page=True,animations='disabled')
+        # Scroll to the top first: a full-page capture taken mid-page paints the sticky header over the board.
+        if width==390:page.evaluate("document.querySelector('#toast').hidden=true;document.activeElement.blur();window.scrollTo(0,0)");page.screenshot(path=str(REPORTS/'mobile-preview.png'),full_page=True,animations='disabled')
     assert not errors,errors
     report={'passed':True,'mode':'embedded-source-with-real-HTTP-bridge' if args.embedded else 'normal-navigation','checks':['40 legal initial edges','25 dots','server-created match','mouse moves','keyboard navigation','complete 40-edge game','captures total 16','hash and replay audit','candidate inspector','event inspector','replay scrubber','world leaderboard','channel authorization','rules dialog','390px layout','320px layout','no uncaught page errors'],'pageErrors':errors,'viewports':viewports,'limitations':['Embedded mode does not validate navigation, CSP enforcement, browser cookie attributes, OAuth redirects or download behavior.'] if args.embedded else []}
     (REPORTS/'browser-tests.json').write_text(json.dumps(report,indent=2))
