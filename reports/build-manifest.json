@@ -1,11 +1,11 @@
 {
   "package": "jev-box-score",
   "version": "1.0.0",
-  "builtAt": "2026-10-14T23:49:39.143531+00:00",
+  "builtAt": "2026-10-15T03:11:33.316527+00:00",
   "node": "v24.15.0",
   "runtimeDependencies": 0,
   "validation": {
-    "nodeTestsPassed": 78,
+    "nodeTestsPassed": 85,
     "nodeTestsFailed": 0,
     "browserChecksPassed": 17,
     "browserMode": "embedded-source-with-real-HTTP-bridge",

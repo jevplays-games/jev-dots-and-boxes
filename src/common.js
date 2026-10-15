@@ -10,7 +10,18 @@ export const validId=x=>typeof x==='string'&&/^[\w-]{8,80}$/.test(x);
 export const json=(data,status=200,headers={})=>new Response(JSON.stringify(data),{status,headers:{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store',...headers}});
 // APP_ORIGIN is the canonical origin. LEGACY_APP_ORIGINS (comma-separated) keeps the pre-rename hostname working
 // until cutover, so the same Worker serves both the new and the pre-rename hostname.
-export function appOrigins(env){return [env.APP_ORIGIN,...String(env.LEGACY_APP_ORIGINS??'').split(',').map(o=>o.trim())].filter(Boolean);}
+// Orchestrator rule D9: a legacy entry is admitted only as a bare origin. It must parse, be https (http only for a
+// loopback host in local development), equal its own URL origin once one trailing "/" is removed (so no userinfo,
+// path, query or fragment) and contain no "@", "?", "#" or "*". Anything else is skipped with one structured warning
+// per distinct entry and never throws: a typo can neither 500 every request nor admit a host it only appears to name.
+const skippedLegacyOrigins=new Set();
+export function legacyOrigin(env,entry){
+  try{const url=new URL(entry),scheme=url.protocol==='https:'||(url.protocol==='http:'&&localDevelopment(env)&&['localhost','127.0.0.1','[::1]'].includes(url.hostname));
+    if(scheme&&!/[@?#*]/.test(entry)&&entry.replace(/\/$/,'')===url.origin)return url.origin;}catch{}
+  if(!skippedLegacyOrigins.has(entry)){skippedLegacyOrigins.add(entry);console.warn(JSON.stringify({event:'legacy_origin_skipped',variable:'LEGACY_APP_ORIGINS',entry:entry.slice(0,200),reason:'not a bare https origin'}));}
+  return null;
+}
+export function appOrigins(env){return [env.APP_ORIGIN,...String(env.LEGACY_APP_ORIGINS??'').split(',').map(o=>o.trim()).filter(Boolean).map(o=>legacyOrigin(env,o))].filter(Boolean);}
 export const allowedOrigin=(env,origin)=>!!origin&&appOrigins(env).includes(origin);
 export function localDevelopment(env){return env.DEV_MODE==='true'&&/^http:\/\/(127\.0\.0\.1|localhost)(:\d+)?$/.test(env.APP_ORIGIN??'');}
 export function cookieName(env){return localDevelopment(env)?'dots_session':'__Host-dots_session';}
