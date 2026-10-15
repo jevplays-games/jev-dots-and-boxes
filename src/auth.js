@@ -1,4 +1,4 @@
-import {first,run,fail,token,validToken,json,cookie,cookieName,cookies,body,quota,withTimeout,operation} from './common.js';
+import {first,run,fail,token,validToken,json,cookie,cookieName,cookies,body,quota,withTimeout,operation,allowedOrigin} from './common.js';
 import {sha256} from '../public/analytics.js';
 export const activityOrigin=env=>/^\d{5,25}$/.test(env.DISCORD_CLIENT_ID??'')?`https://${env.DISCORD_CLIENT_ID}.discordsays.com`:null;
 // Inside a Discord Activity the browser will not send our SameSite cookie, so the game holds the session token in memory.
@@ -25,7 +25,9 @@ export async function sessionResponse(request,env){
 export async function requireMutation(request,env){
   // The Activity origin is honoured only for a bearer-authenticated request, never for a cookie session.
   const origin=request.headers.get('origin'),s=await getSession(request,env),framed=s?.via==='bearer'?activityOrigin(env):null;
-  if(origin!==env.APP_ORIGIN&&!(framed&&origin===framed))fail(403,'origin_rejected');
+  // A same-origin request on either the canonical or a legacy hostname; a cross-host request is rejected.
+  const same=allowedOrigin(env,origin)&&origin===new URL(request.url).origin;
+  if(!same&&!(framed&&origin===framed))fail(403,'origin_rejected');
   if(!s)fail(401,'session_required');const csrf=request.headers.get('x-csrf-token');
   if(!validToken(csrf)||await sha256(csrf)!==s.csrf_hash)fail(403,'csrf_rejected');
   await quota(env,`request:${s.token_hash}`,600);return s;
@@ -41,6 +43,9 @@ export async function attachContext(request,env,s){
   await run(env,'UPDATE sessions SET context_json=?,pending_launch_hash=? WHERE token_hash=?',JSON.stringify(context),hash,s.token_hash);
   return json({context});
 }
+// The session cookie is host-only, so OAuth returns to the hostname the player started on (worker.js has already
+// checked that it is APP_ORIGIN or a LEGACY_APP_ORIGINS entry). Every such callback must be registered with Discord.
+const callbackUri=request=>`${new URL(request.url).origin}/api/auth/discord/callback`;
 export async function oauthStart(request,env){
   if(!env.DISCORD_CLIENT_ID||!env.DISCORD_CLIENT_SECRET)fail(503,'discord_not_configured');
   let s=await getSession(request,env);const fresh=!s;if(!s)s=await issueSession(env);
@@ -48,7 +53,7 @@ export async function oauthStart(request,env){
   const params=new URL(request.url).searchParams,launch=params.get('launch');
   if(launch&&!validToken(launch))fail(400,'invalid_launch');
   const state=token();await run(env,'INSERT INTO oauth_flows(state_hash,browser_binding_hash,pending_launch_hash,expires_at) VALUES(?,?,?,?)',await sha256(state),s.token_hash,launch?await sha256(launch):s.pending_launch_hash,Date.now()+600000);
-  const target=new URL('https://discord.com/oauth2/authorize');target.search=new URLSearchParams({client_id:env.DISCORD_CLIENT_ID,response_type:'code',redirect_uri:`${env.APP_ORIGIN}/api/auth/discord/callback`,scope:'identify',state}).toString();
+  const target=new URL('https://discord.com/oauth2/authorize');target.search=new URLSearchParams({client_id:env.DISCORD_CLIENT_ID,response_type:'code',redirect_uri:callbackUri(request),scope:'identify',state}).toString();
   return new Response(null,{status:302,headers:{Location:target.toString(),...(fresh?{'Set-Cookie':cookie(env,s.raw)}:{})}});
 }
 export async function discordIdentity(env,code,redirectUri){
@@ -74,7 +79,7 @@ export async function oauthCallback(request,env){
   if(!flow)fail(403,'oauth_state_rejected');
   if(q.has('error'))return new Response(null,{status:302,headers:{Location:'/?auth=cancelled'}});
   const code=q.get('code');if(!code||code.length>2048)fail(400,'oauth_code_missing');
-  const {identity}=await discordIdentity(env,code,`${env.APP_ORIGIN}/api/auth/discord/callback`);
+  const {identity}=await discordIdentity(env,code,callbackUri(request));
   await upsertDiscordUser(env,identity);
   let context=null;if(flow.pending_launch_hash)context=await launchContext(env,flow.pending_launch_hash,identity.id);
   const next=await issueSession(env,identity.id,context,context?flow.pending_launch_hash:null);

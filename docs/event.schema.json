@@ -1,6 +1,6 @@
 {
   "$schema":"https://json-schema.org/draft/2020-12/schema",
-  "title":"Dots and Boxes auditable event v1",
+  "title":"Box Score auditable event v1",
   "type":"object",
   "required":["schema","matchId","sequence","utc","elapsedMs","type","requestId","clock","previousHash","data","hash"],
   "properties":{

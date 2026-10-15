@@ -1,14 +1,14 @@
 /** Bounded, reproducible paired benchmark. Live mode requires an explicit --mode jev. */
 import {mkdir,writeFile} from 'node:fs/promises';import {resolve} from 'node:path';
-import {createInitialState,applyAction,getLegalActions,getScore,getOutcome,serialize} from '../public/games/dots-and-boxes/rules.js';
-import {analyzeCandidates,heuristicAction,selectLocal,exactRegret,tacticalSnapshot} from '../public/games/dots-and-boxes/analysis.js';
+import {createInitialState,applyAction,getLegalActions,getScore,getOutcome,serialize} from '../public/games/box-score/rules.js';
+import {analyzeCandidates,heuristicAction,selectLocal,exactRegret,tacticalSnapshot} from '../public/games/box-score/analysis.js';
 import {prepareDecision,evaluatePrepared,profileConfig} from '../src/jev.js';
 import {appendEvent,sha256,auditMatch,summarize,csv,statistics} from '../public/analytics.js';
 try{process.loadEnvFile();}catch(error){if(error.code!=='ENOENT')throw error;}
 const options=Object.fromEntries(process.argv.slice(2).reduce((pairs,v,i,a)=>{if(v.startsWith('--'))pairs.push([v.slice(2),a[i+1]]);return pairs;},[]));
 const pairs=Number(options.pairs??4),mode=options.mode??'local',difficulty=options.difficulty??'normal',opponent=options.opponent??'random',seed=Number(options.seed??20260922),out=resolve(options.out??'bench/output'),size=Number(options.size??4);
 if(!Number.isInteger(pairs)||pairs<1||pairs>10000||!['local','jev'].includes(mode)||!['random','greedy','heuristic','search','jev'].includes(opponent))throw Error('Invalid benchmark arguments.');
-if((mode==='jev'||opponent==='jev')&&!process.env.TYPESAFE_API_KEY)throw Error('Live JEV mode requires TYPESAFE_API_KEY. No silent substitution.');
+if((mode==='jev'||opponent==='jev')&&!process.env.TYPESAFE_API_KEY)throw Error('Live Jev mode requires TYPESAFE_API_KEY. No silent substitution.');
 const env={...process.env,JEV_MODEL:process.env.JEV_MODEL??'jev-1.13.0'},profile=profileConfig(env,difficulty),poolId=await sha256(profile),rows=[],pairRows=[];
 const randomFor=s=>()=>{s=(1664525*s+1013904223)>>>0;return s/4294967296;};
 await mkdir(out,{recursive:true});
@@ -46,5 +46,5 @@ function bootstrap(key){if(pairRows.length<2)return null;const random=randomFor(
 const report={schema:'dots-benchmark-v1',createdAt:new Date().toISOString(),pairs,games:rows.length,mode,opponent,difficulty,size,seed,poolId,profile,
   jevSeatBalancedScoreRate:pairRows.reduce((n,r)=>n+r.meanScore,0)/pairs,jevMeanBoxMargin:pairRows.reduce((n,r)=>n+r.meanMargin,0)/pairs,
   pairBootstrap95:{scoreRate:bootstrap('meanScore'),boxMargin:bootstrap('meanMargin')},latencyMeanAcrossGamesMs:statistics(rows.map(r=>r.latencyMeanMs)),providerAttempts:rows.reduce((n,r)=>n+r.providerAttempts,0),
-  warnings:[mode==='local'?'This measures a local search/heuristic system, NOT live JEV quality.':'This measures the JEV-assisted system, not the model in isolation.',opponent==='random'?'Intervals resample the observed seed pairs only; this small smoke cohort is not a broad strength estimate.':'Deterministic opponent repetitions may be duplicates; confidence intervals are descriptive, not independent quality evidence.','Timing is specific to this machine and run.','No hidden live calls are made when both modes are local.']};
+  warnings:[mode==='local'?'This measures a local search/heuristic system, NOT live Jev quality.':'This measures the Jev-assisted system, not the model in isolation.',opponent==='random'?'Intervals resample the observed seed pairs only; this small smoke cohort is not a broad strength estimate.':'Deterministic opponent repetitions may be duplicates; confidence intervals are descriptive, not independent quality evidence.','Timing is specific to this machine and run.','No hidden live calls are made when both modes are local.']};
 await writeFile(resolve(out,'summary.json'),JSON.stringify(report,null,2));await writeFile(resolve(out,'games.csv'),csv(rows));await writeFile(resolve(out,'pairs.csv'),csv(pairRows));console.log(JSON.stringify(report,null,2));

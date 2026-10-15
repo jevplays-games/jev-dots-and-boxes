@@ -11,6 +11,6 @@ if(!botToken){
   if(typeof access_token!=='string')throw Error('Discord returned no access token.');
   authorization=`Bearer ${access_token}`;
 }
-const response=await fetch(`https://discord.com/api/v10/applications/${id}/commands`,{method:'POST',headers:{Authorization:authorization,'Content-Type':'application/json'},body:JSON.stringify({name:'play',description:'Play Dots and Boxes against JEV',type:1,integration_types:[0],contexts:[0]})});
+const response=await fetch(`https://discord.com/api/v10/applications/${id}/commands`,{method:'POST',headers:{Authorization:authorization,'Content-Type':'application/json'},body:JSON.stringify({name:'play',description:'Play Box Score against Jev',type:1,integration_types:[0],contexts:[0]})});
 if(!response.ok)throw Error(`Discord registration failed: HTTP ${response.status}`);
 const result=await response.json();console.log(`Registered /play (${result.id}).`);

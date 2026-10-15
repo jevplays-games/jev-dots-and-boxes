@@ -1,5 +1,5 @@
 /** Shared analytics: summaries, lossless export, replay audit and safe CSV. */
-import {createInitialState,applyAction,serialize,getScore,getOutcome} from './games/dots-and-boxes/rules.js';
+import {createInitialState,applyAction,serialize,getScore,getOutcome} from './games/box-score/rules.js';
 export const EVENT_SCHEMA='dots-analytics-v1';
 let CLOCK_DOMAIN; // created on first use: Workers forbid random values in module scope
 export function canonical(value) {
@@ -89,7 +89,7 @@ export async function auditMatch(match,{verifyDecisions=true}={}) {
   }
   if(serialize(state)!==serialize(match.state))errors.push('Final state mismatch');
   if(match.status==='completed'&&getOutcome(state)!==match.outcome)errors.push('Final outcome mismatch');
-  if(match.ranked&&match.events.some(e=>e.type==='decision_completed'&&['fallback','local'].includes(e.data.source)))errors.push('Non-JEV decision in ranked match');
+  if(match.ranked&&match.events.some(e=>e.type==='decision_completed'&&['fallback','local'].includes(e.data.source)))errors.push('Non-Jev decision in ranked match');
   return {ok:errors.length===0,errors,events:match.events.length,headHash:previous,state,score:getScore(state),outcome:getOutcome(state)};
 }
 export function csv(rows) {

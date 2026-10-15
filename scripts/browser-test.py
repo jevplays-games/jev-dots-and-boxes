@@ -32,13 +32,13 @@ with sync_playwright() as p:
         page.expose_binding('__httpBridge',bridge)
         html=(ROOT/'public/index.html').read_text();html=re.sub(r'<script[^>]*>.*?</script>','',html,flags=re.S);html=re.sub(r'<link[^>]+>','',html)
         page.set_content(html);page.add_style_tag(content=(ROOT/'public/brand/brand.css').read_text());page.add_style_tag(content=(ROOT/'public/game.css').read_text())
-        workers='\n'.join(flatten(f) for f in ['games/dots-and-boxes/rules.js','games/dots-and-boxes/analysis.js','analysis-worker.js'])
+        workers='\n'.join(flatten(f) for f in ['games/box-score/rules.js','games/box-score/analysis.js','analysis-worker.js'])
         setup='''if(!crypto.randomUUID)crypto.randomUUID=()=>[...crypto.getRandomValues(new Uint8Array(16))].map((v,i)=>([4,6,8,10].includes(i)?'-':'')+v.toString(16).padStart(2,'0')).join('');
         window.fetch=async (url,init={})=>{const r=await window.__httpBridge({url:String(url),...init});return new Response(r.text,{status:r.status,headers:r.headers});};
         const NativeWorker=window.Worker;const workerBlob=new Blob([WORKER_CODE],{type:'text/javascript'});
         window.Worker=class extends NativeWorker{constructor(){super(URL.createObjectURL(workerBlob));}};
         '''.replace('WORKER_CODE',json.dumps(workers))
-        code='\n'.join(flatten(f) for f in ['games/dots-and-boxes/rules.js','games/dots-and-boxes/analysis.js','analytics.js','game.js'])
+        code='\n'.join(flatten(f) for f in ['brand/brand.js','games/box-score/rules.js','games/box-score/analysis.js','analytics.js','game.js'])
         page.add_script_tag(content=setup+code)
     else:page.goto(args.url)
     page.wait_for_selector('.edge',timeout=15000)

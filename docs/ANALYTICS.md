@@ -32,7 +32,7 @@ The `decision_prepared` record retains all legal actions, even when the stronges
 
 The candidate export joins the completed selection, probability, model certainty and source onto those rows. An action omitted from a proven-optimal admissible set has **null probability**, not zero model preference. Local/forced/solver decisions have no invented provider probability distribution.
 
-## Every JEV decision and attempt
+## Every Jev decision and attempt
 
 The prepared event contains the exact server-built request, readable structured state, criteria, state hash and request hash. No user profile, Discord token, API key or free-form browser text is sent as game state.
 
@@ -98,4 +98,4 @@ Hourly maintenance removes operational records older than 30 days and unranked m
 
 ## What this does not measure
 
-No hidden chain-of-thought, true subjective intent, actual CPU energy, external solver use, unreported provider billing, unobserved browser idle reasons, continuous guild membership or general JEV strength is inferred. Calibration and playing-strength conclusions require a held-out, adequately replicated live evaluation. The included local smoke benchmark is not that evaluation.
+No hidden chain-of-thought, true subjective intent, actual CPU energy, external solver use, unreported provider billing, unobserved browser idle reasons, continuous guild membership or general Jev strength is inferred. Calibration and playing-strength conclusions require a held-out, adequately replicated live evaluation. The included local smoke benchmark is not that evaluation.

@@ -1,6 +1,6 @@
 # Discord Activity mode
 
-Dots and Boxes can run as a Discord Activity (Embedded App SDK). Discord loads the game in an iframe on
+Box Score can run as a Discord Activity (Embedded App SDK). Discord loads the game in an iframe on
 `https://<DISCORD_CLIENT_ID>.discordsays.com`, proxied to the game's own hostname. The normal browser flow is unchanged.
 
 ## What is different inside an Activity
@@ -21,14 +21,14 @@ Dots and Boxes can run as a Discord Activity (Embedded App SDK). Discord loads t
   bearer-authenticated mutations. Cookie sessions still require `APP_ORIGIN`; the CSRF token is always required.
   `GET /api/activity/config` returns only the public client id.
 
-Matches, ranked eligibility, idempotency, revision checks, leases, quotas and JEV provenance are untouched.
+Matches, ranked eligibility, idempotency, revision checks, leases, quotas and Jev provenance are untouched.
 
 ## Portal settings
 
 In the Discord Developer Portal for this game's application:
 
 1. Activities: enable Activities.
-2. Activities > URL Mappings: prefix `/` -> target `dots-and-boxes.jevplay.games` (the game's hostname, no scheme).
+2. Activities > URL Mappings: prefix `/` -> target `box-score.jevplay.games` (the game's hostname, no scheme). Until the rename cutover the old target `dots-and-boxes.jevplay.games` also works; switch the mapping when the new hostname is live.
 3. OAuth2 needs no new redirect (the SDK code exchange sends none). Scope requested: `identify`.
 
 Enabling Activities makes Discord create a primary **Entry Point** command. `npm run discord:register`

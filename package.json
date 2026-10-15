@@ -1,9 +1,10 @@
 {
-  "name": "jev-dots-and-boxes",
+  "name": "jev-box-score",
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Vanilla Dots and Boxes against JEV with authoritative matches and detailed auditable analytics",
+  "description": "Box Score: claim boxes against Jev with authoritative matches and detailed auditable analytics",
+  "license": "MIT",
   "engines": {
     "node": ">=22.13.0"
   },

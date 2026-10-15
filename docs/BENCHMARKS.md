@@ -2,7 +2,7 @@
 
 ## Included executed evidence
 
-`reports/benchmark/` contains an executed **12-game local smoke run**: six seeded random-opponent pairs, each seed played with both starting seats on a 4×4-box board. The measured system was the **local Normal search policy**, not a live JEV model. Each game includes its complete journal and was independently replay-audited by the harness.
+`reports/benchmark/` contains an executed **12-game local smoke run**: six seeded random-opponent pairs, each seed played with both starting seats on a 4×4-box board. The measured system was the **local Normal search policy**, not a live Jev model. Each game includes its complete journal and was independently replay-audited by the harness.
 
 Read `summary.json`, `games.csv`, `pairs.csv` and the full per-game JSON files. These files are measurements from the packaging run, not demonstration values. Timings are specific to that runtime. The very weak random baseline makes favorable scores unsurprising and does not establish strength against skilled humans or chain-aware opponents.
 
@@ -24,7 +24,7 @@ Every pair uses the same seed and two starting seats. Store both games; summariz
 
 Deterministic policies from the empty board can repeatedly generate the same trajectory. Increasing a requested game count does not create independent evidence. Random-opponent seeds introduce variation but are still observations against that selected distribution. For scientific strength claims, add a prespecified held-out position suite, independent opponents and sufficient independent pairs.
 
-Compare configurations only within the same board/rules version and include model, prompt, source revision and profile hashes. Report raw failures, fallback events, unreported tokens and unresolved decisions; do not filter difficult failures out of results without accounting for them.
+Compare configurations only within the same board/rules version and include model, prompt, source revision and profile hashes. The Box Score rename (2026-10) deliberately did **not** change the model-facing request (`state.game` is still `dots-and-boxes`, the acting player is still `JEV`) or the rules/prompt versions, so request and profile hashes, and therefore cohorts, are continuous across the rename; `tests/rename.test.mjs` pins them. Note that `SOURCE_REVISION` is part of the profile hash, so a deploy at a new revision starts a new cohort as it always has. Report raw failures, fallback events, unreported tokens and unresolved decisions; do not filter difficult failures out of results without accounting for them.
 
 ## Measured outputs
 
@@ -38,6 +38,6 @@ The Node suite includes a separate recursive endgame oracle. Twenty sampled five
 
 ## Recommended research expansion
 
-Freeze a held-out tactical set covering captures, double captures, retained-turn continuations, chains, loops, handouts and mixed components. Run four ablations: minimally encoded JEV, JEV with computed tactics, JEV with bounded search, and search without JEV. Pair seats and seeds; separate tuning data from test data. Record the share of decisions made by JEV, forced rules, proven solver choices and fallback. Publish system-level results without attributing all assistance to the model.
+Freeze a held-out tactical set covering captures, double captures, retained-turn continuations, chains, loops, handouts and mixed components. Run four ablations: minimally encoded Jev, Jev with computed tactics, Jev with bounded search, and search without Jev. Pair seats and seeds; separate tuning data from test data. Record the share of decisions made by Jev, forced rules, proven solver choices and fallback. Publish system-level results without attributing all assistance to the model.
 
 This package supplies the runner and evidence schema, not a fabricated result for those unexecuted live experiments.

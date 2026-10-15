@@ -11,7 +11,7 @@ Packaging date: 2026-09-22. Runtime: Node v22.16.0 on Linux, built-in SQLite; br
 | Seeded complete games | 1,000 deterministic rule-invariant checks | `tests/rules.test.mjs` |
 | Independent exact-search oracle | 20 sampled five-edge endgames, every legal root compared | `tests/rules.test.mjs` |
 | Complete authoritative local game | 40 edges, ownership, result, CSV and journal audit | `tests/api.test.mjs` |
-| Complete mocked JEV ranked game | Every provider decision and final replay audited | `tests/api.test.mjs` |
+| Complete mocked Jev ranked game | Every provider decision and final replay audited | `tests/api.test.mjs` |
 | Concurrency and stale requests | Single committed decision under concurrent requests | `tests/api.test.mjs` |
 | Discord and OAuth boundaries | Generated Ed25519 signatures, mocked consent/token response, state binding and session rotation | `tests/auth.test.mjs` |
 | Leaderboard scope and pagination | World/server/channel isolation, version separation, ties and 27-user pagination fixture | `tests/api.test.mjs` |
@@ -33,10 +33,10 @@ This method **does not validate native navigation, deployment CSP enforcement, b
 
 No real TypeSafe inference, Discord account consent, production Discord interaction delivery, application installation or Cloudflare deployment was performed. No credentials were supplied. Provider and OAuth tests used deterministic fixtures and generated signing keys; those tests must not be presented as live-service validation.
 
-The benchmark used the local search/heuristic policy against a seeded random baseline. Its success is not evidence of JEV playing strength, calibration or human-level play. Search-regret evidence is limited to solved positions.
+The benchmark used the local search/heuristic policy against a seeded random baseline. Its success is not evidence of Jev playing strength, calibration or human-level play. Search-regret evidence is limited to solved positions.
 
 ## Packaging integrity and remaining deployment checks
 
 `reports/build-manifest.json` records source/asset sizes and executed checks. `SHA256SUMS.txt` covers shipped files. The ZIP excludes local databases, sessions, real credentials, dependency caches and temporary failure logs.
 
-Before public launch: run normal browser tests, supply a deployment revision, test actual JEV requests, complete Discord OAuth and channel launch, verify live ranked settlement, inspect provider billing and storage sizes, apply host-level abuse controls, and choose evidence-retention periods. Hard/JEV search CPU budgets require measurement on the selected hosting plan. This validation is not an independent security audit or exhaustive enumeration of the full 4×4 state space.
+Before public launch: run normal browser tests, supply a deployment revision, test actual Jev requests, complete Discord OAuth and channel launch, verify live ranked settlement, inspect provider billing and storage sizes, apply host-level abuse controls, and choose evidence-retention periods. Hard/Jev search CPU budgets require measurement on the selected hosting plan. This validation is not an independent security audit or exhaustive enumeration of the full 4×4 state space.

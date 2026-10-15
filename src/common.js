@@ -8,6 +8,10 @@ export const token=()=>Array.from(crypto.getRandomValues(new Uint8Array(32)),x=>
 export const validToken=x=>typeof x==='string'&&/^[a-f0-9]{64}$/.test(x);
 export const validId=x=>typeof x==='string'&&/^[\w-]{8,80}$/.test(x);
 export const json=(data,status=200,headers={})=>new Response(JSON.stringify(data),{status,headers:{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store',...headers}});
+// APP_ORIGIN is the canonical origin. LEGACY_APP_ORIGINS (comma-separated) keeps the pre-rename hostname working
+// until cutover, so the same Worker serves both the new and the pre-rename hostname.
+export function appOrigins(env){return [env.APP_ORIGIN,...String(env.LEGACY_APP_ORIGINS??'').split(',').map(o=>o.trim())].filter(Boolean);}
+export const allowedOrigin=(env,origin)=>!!origin&&appOrigins(env).includes(origin);
 export function localDevelopment(env){return env.DEV_MODE==='true'&&/^http:\/\/(127\.0\.0\.1|localhost)(:\d+)?$/.test(env.APP_ORIGIN??'');}
 export function cookieName(env){return localDevelopment(env)?'dots_session':'__Host-dots_session';}
 export function cookie(env,value,maxAge=604800){return `${cookieName(env)}=${value}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAge}${localDevelopment(env)?'':'; Secure'}`;}

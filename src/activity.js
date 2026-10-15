@@ -1,7 +1,7 @@
 // Discord Activity support. Discord loads the game in an iframe on <application id>.discordsays.com, where a
 // SameSite cookie is not sent, so the game signs the player in through the Embedded App SDK and then keeps a
 // bearer session token in memory. Nothing here changes the normal browser sign-in.
-import {fail,json,body,quota,operation} from './common.js';
+import {fail,json,body,quota,operation,allowedOrigin} from './common.js';
 import {activityOrigin,discordIdentity,upsertDiscordUser,issueSession} from './auth.js';
 
 export function activityConfig(env){
@@ -11,7 +11,7 @@ export function activityConfig(env){
 export async function createActivitySession(request,env){
   if(!env.DISCORD_CLIENT_ID||!env.DISCORD_CLIENT_SECRET)fail(503,'discord_not_configured');
   const origin=request.headers.get('origin');
-  if(!origin||(origin!==activityOrigin(env)&&origin!==env.APP_ORIGIN))fail(403,'origin_rejected');
+  if(!origin||(origin!==activityOrigin(env)&&!allowedOrigin(env,origin)))fail(403,'origin_rejected');
   await quota(env,'activity-session-global',Number(env.MAX_SESSIONS_PER_HOUR??300));
   const {code}=await body(request,4096);
   if(typeof code!=='string'||!code||code.length>=2048)fail(400,'invalid_code');

@@ -1,5 +1,5 @@
-import {analyzeCandidates,selectLocal,PROFILES,ANALYSIS_VERSION} from '../public/games/dots-and-boxes/analysis.js';
-import {getScore,serialize,geometry} from '../public/games/dots-and-boxes/rules.js';
+import {analyzeCandidates,selectLocal,PROFILES,ANALYSIS_VERSION} from '../public/games/box-score/analysis.js';
+import {getScore,serialize,geometry,LEGACY_GAME_ID} from '../public/games/box-score/rules.js';
 import {sha256,distributionMetrics} from '../public/analytics.js';
 import {quota} from './common.js';
 export const PROMPT_VERSION='choice-v1';
@@ -14,7 +14,9 @@ export async function prepareDecision(state,difficulty,model,analysisOverrides={
     const best=(state.toMove===1?Math.max:Math.min)(...candidates.map(c=>c.search.estimate));admissible=candidates.filter(c=>c.search.estimate===best);
   }
   const clean=c=>{const {featureMs,...value}=c;return value;};
-  const request={model,state:{game:'dots-and-boxes',boardSize:state.size,actingPlayer:state.toMove===1?'JEV':'human',score:getScore(state),
+  // Model-facing identifiers ('dots-and-boxes', 'JEV') are unchanged by the Box Score rename: changing them changes the
+  // request and profile hashes and would split leaderboard and benchmark cohorts. Version them deliberately if ever changed.
+  const request={model,state:{game:LEGACY_GAME_ID,boardSize:state.size,actingPlayer:state.toMove===1?'JEV':'human',score:getScore(state),
     remainingEdges:candidates.length,remainingBoxes:state.boxes.filter(b=>b===null).length,
     board:{edges:geometry(state.size).edges.map(e=>({id:e.id,orientation:e.orientation,row:e.row,col:e.col,owner:state.edges[e.id]})),boxes:state.boxes},
     rules:{completingBoxesRetainsMove:true,takingAvailableBoxesIsOptional:true,oneActionDrawsOneEdge:true}},

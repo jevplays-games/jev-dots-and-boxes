@@ -1,5 +1,5 @@
-import {createInitialState,applyAction,serialize,getScore,getOutcome,isTerminal,exportReplay} from '../public/games/dots-and-boxes/rules.js';
-import {analyzeCandidates,exactRegret,tacticalSnapshot,PROFILES} from '../public/games/dots-and-boxes/analysis.js';
+import {createInitialState,applyAction,serialize,getScore,getOutcome,isTerminal,exportReplay} from '../public/games/box-score/rules.js';
+import {analyzeCandidates,exactRegret,tacticalSnapshot,PROFILES} from '../public/games/box-score/analysis.js';
 import {appendEvent,sha256,auditMatch,summarize,exportTables,csv} from '../public/analytics.js';
 import {prepareDecision,evaluatePrepared,profileConfig} from './jev.js';
 import {first,all,run,fail,json,validId,quota} from './common.js';
@@ -107,7 +107,7 @@ export async function stepMatch(env,s,id,b){
   for(const attempt of decision.attempts)await appendEvent(m,'provider_attempt',attempt,b.requestId);
   const {attempts,...evidence}=decision;await appendEvent(m,'decision_completed',evidence,b.requestId);
   if(decision.source==='fallback'){
-    m.ranked=false;m.mode='local';m.notice=`JEV was unavailable (${decision.failure}). Continued against the local opponent; this match is not ranked.`;
+    m.ranked=false;m.mode='local';m.notice=`Jev was unavailable (${decision.failure}). Continued against the local opponent; this match is not ranked.`;
     await appendEvent(m,'ranked_eligibility_voided',{reason:decision.failure,continuation:'local'});
   }
   m.pending=null;await commitMove(m,decision.edgeId,decision.source,b.requestId,decision.decisionId,prepared.candidates);await saveMatch(env,m,row.version);

@@ -393,7 +393,7 @@
       "unit": "box margin",
       "source": "candidate.search",
       "evidenceClass": "computed feature / bounded estimate",
-      "definition": "Bounded predicted JEV-minus-human final margin.",
+      "definition": "Bounded predicted Jev-minus-human final margin.",
       "missing": "Not probability; absent when no search."
     },
     {
