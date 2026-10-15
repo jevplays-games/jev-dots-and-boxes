@@ -37,7 +37,7 @@ async function loadEvents(){
 async function acceptSnapshot(value){const oldEvents=match?.id===value.id?match.events:[];match={...value,events:oldEvents};await loadEvents();render();}
 async function refresh(){if(!online||match?.preview)return;await acceptSnapshot(await api(`/api/matches/${match.id}`));}
 async function create(){
-  replayOverride=null;stopReplay();savePreferences();
+  replayOverride=null;stopReplay();savePreferences();$('audit-result').textContent='';
   if(online){await acceptSnapshot(await api('/api/matches','POST',{difficulty:$('difficulty').value,mode:$('mode').value,ranked:$('ranked').checked}));}
   else{match=blankMatch(false);await appendEvent(match,'match_created',{mode:'local',difficulty:match.difficulty,firstPlayer:0,initialStateHash:await sha256(serialize(match.state))});saveLocal();render();}
 }
@@ -195,13 +195,17 @@ function renderDecision(){
   if(c){$('factors').replaceChildren();recordRows($('factors'),[['Immediate captures',c.capturesNow],['New third sides',c.newThirdSides],['Safe moves afterward',c.safeMovesAfter],['Retains move',c.capturesNow?'Yes':'No'],['Search margin',c.search?`${fmt(c.search.estimate,1)} (${c.search.exact?'exact':'estimate'})`:'Not searched']]);}
 }
 function svgElement(tag,attributes,text){const e=document.createElementNS(svgNS,tag);for(const [k,v] of Object.entries(attributes))e.setAttribute(k,String(v));if(text!==undefined)e.textContent=text;return e;}
-function chartGrid(svg,max,xlabel){svg.replaceChildren();for(let i=0;i<3;i++){const y=15+i*58;svg.append(svgElement('line',{x1:25,y1:y,x2:550,y2:y,class:'chart-grid-line'}),svgElement('text',{x:0,y:y+3,class:'chart-text'},fmt(max*(1-i/2))));}const labels=[].concat(xlabel);[['start',25],['middle',287.5],['end',550]].slice(0,labels.length).forEach(([anchor,x],i)=>svg.append(svgElement('text',{x,y:155,'text-anchor':anchor,class:'chart-text'},labels[i])));}
+/* Signed-in label: the name truncates with an ellipsis, the sign-out action never does. */
+function setLoginLabel(user){const button=$('login');if(!user){button.textContent='Sign in with Discord';button.removeAttribute('title');return;}
+  const name=document.createElement('span'),action=document.createElement('span');name.className='login-name';name.textContent=user.display_name;action.className='login-action';action.textContent=' · sign out';
+  button.replaceChildren(name,action);button.title=`Signed in as ${user.display_name}. Sign out`;}
+function chartGrid(svg,max,xlabel,format=fmt){svg.replaceChildren();for(let i=0;i<3;i++){const y=15+i*58;svg.append(svgElement('line',{x1:25,y1:y,x2:550,y2:y,class:'chart-grid-line'}),svgElement('text',{x:0,y:y+3,class:'chart-text'},format(max*(1-i/2))));}const labels=[].concat(xlabel);[['start',25],['middle',287.5],['end',550]].slice(0,labels.length).forEach(([anchor,x],i)=>svg.append(svgElement('text',{x,y:155,'text-anchor':anchor,class:'chart-text'},labels[i])));}
 function renderOverview(s){
   $('metric-moves').textContent=`${s.moveCount} / 40`;$('metric-calls').textContent=s.providerAttempts;$('metric-p50').textContent=ms(s.latencyMs.p50);$('metric-tokens').textContent=fmt(s.knownInputTokens);$('metric-fallbacks').textContent=s.fallbackDecisions;$('metric-cost').textContent=s.estimatedCostUsd===null?'Unknown':`$${fmt(s.estimatedCostUsd,5)}`;
   const moves=match.events.filter(e=>e.type==='move_committed').map(e=>e.data),decisions=match.events.filter(e=>e.type==='decision_completed').map(e=>e.data);
   chartGrid($('score-chart'),16,['0','MOVE','40']);
   for(const [key,cls] of [['human','chart-human'],['jev','chart-jev']]){const points=[[25,131],...moves.map(m=>[25+m.ply/40*525,131-(m.score?.[key]??0)/16*116])];$('score-chart').append(svgElement('polyline',{points:points.map(p=>p.join(',')).join(' '),class:cls}));}
-  const peak=Math.max(1,...decisions.map(d=>d.totalMs??0));chartGrid($('latency-chart'),peak,'OPPONENT DECISIONS');
+  const peak=Math.max(1,...decisions.map(d=>d.totalMs??0));chartGrid($('latency-chart'),peak,'OPPONENT DECISIONS',v=>fmt(v,peak<10?1:0));
   const width=Math.min(22,480/Math.max(1,decisions.length));decisions.forEach((d,i)=>{const h=(d.totalMs??0)/peak*116;const b=svgElement('rect',{x:30+i*(width+4),y:131-h,width,height:h,rx:2,class:'chart-bar'});b.append(svgElement('title',{},`Decision ${i+1}: ${ms(d.totalMs)}`));$('latency-chart').append(b);});
   const human=s.players[0],jev=s.players[1];recordRows($('tactical-record'),[['Scoring moves · you / opponent',`${human.scoringMoves} / ${jev.scoringMoves}`],['Double captures',`${human.doubleCaptures} / ${jev.doubleCaptures}`],['New third sides',`${human.newThirdSides} / ${jev.newThirdSides}`],['Declined available captures',`${human.declinedImmediateCapture} / ${jev.declinedImmediateCapture}`],['Longest consecutive move run',`${s.longestSamePlayerRun.human} / ${s.longestSamePlayerRun.jev}`],['Human server-observed turn median',ms(human.serverObservedTurnMs.p50)]]);
   recordRows($('integrity-record'),[['Events / committed edges',`${s.eventCount} / ${s.moveCount}`],['Decision latency · p95 / p99',`${ms(s.latencyMs.p95)} / ${ms(s.latencyMs.p99)}`],['Known output tokens / unknown-usage calls',`${s.knownOutputTokens} / ${s.unknownUsageAttempts}`],['Retries / provider failures',`${s.retries} / ${s.providerFailures}`],['Fully solved decisions',s.exactDecisions],['Exact regret · human / opponent',`${fmt(human.exactRegret.mean,2)} / ${fmt(jev.exactRegret.mean,2)}`],['Journal head',s.headHash?s.headHash.slice(0,18)+'…':'Not started']]);
@@ -285,7 +289,7 @@ async function init(){
     catch(e){toast(`Could not sign in through Discord. ${e.message}`);}
   }
   try{
-    session=await api('/api/session');$('login').textContent=session.user?`${session.user.display_name} · sign out`:'Sign in with Discord';
+    session=await api('/api/session');setLoginLabel(session.user);
     $('mode').value=session.capabilities.jev?'jev':'local';$('mode').querySelector('[value="jev"]').disabled=!session.capabilities.jev;
     if(launch&&session.user){try{await api('/api/session/context','POST',{launch});session=await api('/api/session');launch=null;toast('Discord community context verified. Enable Ranked before starting an official match.');}catch(e){toast(e.message);}}
     if(session.activeMatchId){
