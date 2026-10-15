@@ -181,7 +181,7 @@ function render(){
   $('new-game').disabled=busy;$('ranked').disabled=!online||!session?.user||!session?.capabilities?.ranked||$('mode').value==='local';if($('ranked').disabled)$('ranked').checked=false;
   $('connection').textContent=online?'Server-authoritative · evidence stays with your match':'Browser-only practice · not eligible for leaderboards';
   $('agent-title').textContent=match.mode==='jev'?'Jev · '+(match.profile?.model??'pinned model'):'Local practice · not Jev';
-  $('agent-state').textContent=busy&&s.toMove===1?'Waiting for a validated decision':`${match.difficulty[0].toUpperCase()+match.difficulty.slice(1)} · ${online?'server-authoritative':'offline browser'}`;
+  $('agent-state').textContent=busy&&s.toMove===1?'Waiting for a validated decision':`${match.difficulty[0].toUpperCase()+match.difficulty.slice(1)} level · ${online?'server-authoritative':'offline browser'}`;
   buildBoard();renderDecision();$('event-count').textContent=match.events.length;
   if(tab==='overview')renderOverview(summary);if(tab==='candidates')renderCandidates();if(tab==='timeline')renderTimeline();if(tab==='replay')renderReplay();
   // Timing is available to opt-in diagnostics, sampled only on explicit actions.
