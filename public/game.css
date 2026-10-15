@@ -69,6 +69,8 @@
 /* Result plaque: the status line becomes the plaque in place. */
 .turn-line.jv-plaque{margin-left:var(--s4);margin-right:var(--s4);padding:var(--s2) var(--s4)}
 .turn-line.jv-plaque .status-light{display:none}
+/* The edge count turns ink on the plaque: on the magenta win plaque --subtle is only 3.2:1, ink is 4.9:1. */
+.turn-line.jv-plaque>span:last-child{color:var(--ink)}
 .turn-line.is-win{--plaque-art:url(/brand/result-win.svg)}.turn-line.is-draw{--plaque-art:url(/brand/result-draw.svg)}.turn-line.is-loss{--plaque-art:url(/brand/result-loss.svg)}
 .insight-card .factor-list p,.factor-list>p:only-child{background:url(/art/glass-box.svg) top center/44px no-repeat;padding-top:52px;text-align:center}
 /* Short and wide (landscape phone, picture-in-picture): board left, status and the next game right. */
