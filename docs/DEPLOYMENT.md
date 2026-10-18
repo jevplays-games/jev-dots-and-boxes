@@ -139,3 +139,12 @@ The same Worker handler also runs as a plain Node.js app (`scripts/dev.mjs`) whe
 - The request URL is built from `APP_ORIGIN`, not the Host header, so origin/CSRF checks are unchanged behind the TLS-terminating proxy.
 - SQLite lives at `DB_PATH` (default `.data/game.sqlite`, outside `public/` and never served). The filesystem is ephemeral: a redeploy loses matches, sessions and rankings.
 - The Cloudflare cron is replaced by an in-process hourly timer (also run once at startup) calling the same `scheduled` cleanup.
+
+## Continuous deployment to GoDaddy
+
+`.github/workflows/deploy.yml` runs `npm test` on every pull request and push. On a push to `main` (or **Run workflow**) it then zips the committed tree with `git archive` and `scripts/godaddy-deploy.js` uploads it through the GoDaddy Hosting API (`https://api.godaddy.com/v1/hosting`), waits for the import, and deploys it to the published app `NODEJS-urwbwpwmrj`. A failed test, import or build stops the run and leaves the live app unchanged.
+
+- Repository secret `GODADDY_PAT`: a GoDaddy Personal Access Token with `hosting.application:read`, `hosting.source:write` and `hosting.deployment:execute`. Without it the deploy step is skipped with a warning.
+- Optional repository variable `GODADDY_APP_ID` overrides the target app (API IDs carry the `NODEJS-` prefix).
+- Runtime configuration is not in the zip: keep it under the app's **Settings → Secrets** (Preview and Publish) in GoDaddy.
+- Manual deploy: put `GODADDY_APP_ID` and `GODADDY_PAT` in `.env`, then `git archive --format=zip -o deploy.zip HEAD && npm run deploy:godaddy -- deploy.zip`.
