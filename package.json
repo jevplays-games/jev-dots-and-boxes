@@ -18,6 +18,7 @@
     "export": "node scripts/export.mjs",
     "test:browser": "python scripts/browser-test.py",
     "deploy": "npx wrangler deploy",
-    "db:migrate": "npx wrangler d1 migrations apply dots-and-boxes --remote"
+    "db:migrate": "npx wrangler d1 migrations apply dots-and-boxes --remote",
+    "deploy:godaddy": "node --env-file-if-exists=.env scripts/godaddy-deploy.js"
   }
 }
